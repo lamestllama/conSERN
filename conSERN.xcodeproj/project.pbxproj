@@ -1,0 +1,189 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		074913791B6E4FDE00B7C498 /* conSERN.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913781B6E4FDE00B7C498 /* conSERN.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		074913741B6E4FDE00B7C498 /* conSERN.mexmaci64 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = conSERN.mexmaci64; sourceTree = BUILT_PRODUCTS_DIR; };
+		074913771B6E4FDE00B7C498 /* conSERN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = conSERN.h; sourceTree = "<group>"; };
+		074913781B6E4FDE00B7C498 /* conSERN.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = conSERN.c; sourceTree = "<group>"; };
+		0749137A1B6E4FDE00B7C498 /* conSERNProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = conSERNProj.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0749136D1B6E4FDE00B7C498 = {
+			isa = PBXGroup;
+			children = (
+				074913761B6E4FDE00B7C498 /* conSERN */,
+				074913751B6E4FDE00B7C498 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		074913751B6E4FDE00B7C498 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				074913741B6E4FDE00B7C498 /* conSERN.mexmaci64 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		074913761B6E4FDE00B7C498 /* conSERN */ = {
+			isa = PBXGroup;
+			children = (
+				074913771B6E4FDE00B7C498 /* conSERN.h */,
+				074913781B6E4FDE00B7C498 /* conSERN.c */,
+				0749137A1B6E4FDE00B7C498 /* conSERNProj.xcconfig */,
+			);
+			path = conSERN;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		074913731B6E4FDE00B7C498 /* conSERN */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0749137D1B6E4FDE00B7C498 /* Build configuration list for PBXNativeTarget "conSERN" */;
+			buildPhases = (
+				074913721B6E4FDE00B7C498 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = conSERN;
+			productName = conSERN;
+			productReference = 074913741B6E4FDE00B7C498 /* conSERN.mexmaci64 */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0749136E1B6E4FDE00B7C498 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				TargetAttributes = {
+					074913731B6E4FDE00B7C498 = {
+						CreatedOnToolsVersion = 6.4;
+					};
+				};
+			};
+			buildConfigurationList = 074913711B6E4FDE00B7C498 /* Build configuration list for PBXProject "conSERN" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0749136D1B6E4FDE00B7C498;
+			productRefGroup = 074913751B6E4FDE00B7C498 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				074913731B6E4FDE00B7C498 /* conSERN */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		074913721B6E4FDE00B7C498 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				074913791B6E4FDE00B7C498 /* conSERN.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0749137B1B6E4FDE00B7C498 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BasedOn = conSERNProj.xcconfig;
+				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_EXTENSION = mexmaci64;
+				HEADER_SEARCH_PATHS = "$(MATLABROOT)/extern/include";
+				LIBRARY_SEARCH_PATHS = "$(MATLABROOT)/bin/maci64";
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_LDFLAGS = (
+					"-lmx",
+					"-lmex",
+					"-lmat",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SYMROOT = "$(SRCROOT)/build/$(CONFIGURATION)";
+			};
+			name = Debug;
+		};
+		0749137C1B6E4FDE00B7C498 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(SYMROOT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_EXTENSION = mexmaci64;
+				HEADER_SEARCH_PATHS = "$(MATLABROOT)/extern/include";
+				LIBRARY_SEARCH_PATHS = "$(MATLABROOT)/bin/maci64";
+				MACH_O_TYPE = mh_bundle;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				OTHER_LDFLAGS = (
+					"-lmx",
+					"-lmex",
+					"-lmat",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SYMROOT = "$(SRCROOT)/build/$(CONFIGURATION)";
+			};
+			name = Release;
+		};
+		0749137E1B6E4FDE00B7C498 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		0749137F1B6E4FDE00B7C498 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		074913711B6E4FDE00B7C498 /* Build configuration list for PBXProject "conSERN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0749137B1B6E4FDE00B7C498 /* Debug */,
+				0749137C1B6E4FDE00B7C498 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0749137D1B6E4FDE00B7C498 /* Build configuration list for PBXNativeTarget "conSERN" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0749137E1B6E4FDE00B7C498 /* Debug */,
+				0749137F1B6E4FDE00B7C498 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0749136E1B6E4FDE00B7C498 /* Project object */;
+}
