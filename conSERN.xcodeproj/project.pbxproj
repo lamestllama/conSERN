@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		074913791B6E4FDE00B7C498 /* conSERN.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913781B6E4FDE00B7C498 /* conSERN.c */; };
+		074913821B6E514000B7C498 /* FastSERN.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913801B6E514000B7C498 /* FastSERN.c */; };
+		074913881B6EEC4D00B7C498 /* binomial.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913841B6EEC4D00B7C498 /* binomial.c */; };
+		0749138B1B6EEF3100B7C498 /* uniform.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913891B6EEF3100B7C498 /* uniform.c */; };
+		074913911B6F017C00B7C498 /* connected.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749138F1B6F017C00B7C498 /* connected.c */; };
+		074913941B6F026100B7C498 /* edgelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913921B6F026100B7C498 /* edgelist.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -15,6 +20,18 @@
 		074913771B6E4FDE00B7C498 /* conSERN.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = conSERN.h; sourceTree = "<group>"; };
 		074913781B6E4FDE00B7C498 /* conSERN.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = conSERN.c; sourceTree = "<group>"; };
 		0749137A1B6E4FDE00B7C498 /* conSERNProj.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = conSERNProj.xcconfig; sourceTree = "<group>"; };
+		074913801B6E514000B7C498 /* FastSERN.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FastSERN.c; sourceTree = "<group>"; };
+		074913811B6E514000B7C498 /* FastSERN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FastSERN.h; sourceTree = "<group>"; };
+		074913841B6EEC4D00B7C498 /* binomial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = binomial.c; sourceTree = "<group>"; };
+		074913851B6EEC4D00B7C498 /* binomial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binomial.h; sourceTree = "<group>"; };
+		074913891B6EEF3100B7C498 /* uniform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = uniform.c; sourceTree = "<group>"; };
+		0749138A1B6EEF3100B7C498 /* uniform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uniform.h; sourceTree = "<group>"; };
+		0749138D1B6EEF4400B7C498 /* geometric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geometric.h; sourceTree = "<group>"; };
+		0749138F1B6F017C00B7C498 /* connected.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = connected.c; sourceTree = "<group>"; };
+		074913901B6F017C00B7C498 /* connected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = connected.h; sourceTree = "<group>"; };
+		074913921B6F026100B7C498 /* edgelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = edgelist.c; sourceTree = "<group>"; };
+		074913931B6F026100B7C498 /* edgelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edgelist.h; sourceTree = "<group>"; };
+		074913951B6F1B5900B7C498 /* options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = options.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -39,6 +56,18 @@
 			children = (
 				074913771B6E4FDE00B7C498 /* conSERN.h */,
 				074913781B6E4FDE00B7C498 /* conSERN.c */,
+				074913801B6E514000B7C498 /* FastSERN.c */,
+				0749138F1B6F017C00B7C498 /* connected.c */,
+				074913901B6F017C00B7C498 /* connected.h */,
+				074913921B6F026100B7C498 /* edgelist.c */,
+				074913931B6F026100B7C498 /* edgelist.h */,
+				074913891B6EEF3100B7C498 /* uniform.c */,
+				0749138A1B6EEF3100B7C498 /* uniform.h */,
+				0749138D1B6EEF4400B7C498 /* geometric.h */,
+				074913811B6E514000B7C498 /* FastSERN.h */,
+				074913951B6F1B5900B7C498 /* options.h */,
+				074913841B6EEC4D00B7C498 /* binomial.c */,
+				074913851B6EEC4D00B7C498 /* binomial.h */,
 				0749137A1B6E4FDE00B7C498 /* conSERNProj.xcconfig */,
 			);
 			path = conSERN;
@@ -98,6 +127,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				074913791B6E4FDE00B7C498 /* conSERN.c in Sources */,
+				074913911B6F017C00B7C498 /* connected.c in Sources */,
+				074913881B6EEC4D00B7C498 /* binomial.c in Sources */,
+				0749138B1B6EEF3100B7C498 /* uniform.c in Sources */,
+				074913941B6F026100B7C498 /* edgelist.c in Sources */,
+				074913821B6E514000B7C498 /* FastSERN.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,12 +188,16 @@
 		0749137E1B6E4FDE00B7C498 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
+				MATLABROOT = "$(LOCAL_APPS_DIR)/MATLAB_R2015a.app";
 			};
 			name = Debug;
 		};
 		0749137F1B6E4FDE00B7C498 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
+				MATLABROOT = "$(LOCAL_APPS_DIR)/MATLAB_R2015a.app";
 			};
 			name = Release;
 		};
@@ -182,6 +220,7 @@
 				0749137F1B6E4FDE00B7C498 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
