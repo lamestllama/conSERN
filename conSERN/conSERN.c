@@ -12,111 +12,195 @@
 #include "mex.h"
 #include <time.h>
 
+#define S_rhs               0
+#define Q_rhs               1
+#define N_rhs               2
+#define M_rhs               3
+#define THREADS_rhs         4
+#define BUFFER_SIZE_rhs     5
+#define ALGORITH_rhs        6
+#define DISTANCE_FUN_rhs    7
+#define REGION_SHAPE_rhs    8
+#define REGION_GEOMETRY_rhs 9
+#define CONNECTED_rhs       10
+#define SEED_rhs            11
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     
-    // we nned the edgelist to be initialised empty
-    NodeList nodes = {NULL, NULL};
-    EdgeList edges = {NULL, NULL, NULL, NULL, 0, 0, 0, 0};
-    Options options = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    mxArray *data;
+    mwSize node_array_sz[2];
+    double *pEdgeCount;
+    NodeList nodes;
+    EdgeList edges;
+    Options options;
     GeometryStruct *geometry;
     PolygonStruct *polygon;
-    VectorStruct a = {0,0};
-    VectorStruct b = {1,1};
-    
-    int positive_arg[] = {1, 1, 1, 1, 1, 1, 0, 0, 1};
-    
+    VectorStruct *vector;
+    int i;
     int arg;
-    double *n_edges;
-    mwSize node_array_sz[2];
-    char *ar[] = {"s", "q", "N", "M", "# of threads",
-        "buffer size", "algorithm", "connected", "seed", NULL};
-    char **i = ar;
-    //uint32_t ThreadCount, BufferSize;
+
+    int nonZero[] = {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    int dimM[]    = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1};
+    int dimN[]    = {1, 1, 1, 1, 1, 1, 1, 1, 1, -2, 1, 1};
+    
+    
+    char *ar[] = {  "s", "q", "N", "M",
+                    "number of threads", "buffer size",
+                    "algorithm", "distance function",
+                    "region shape", "region geometry",
+                    "connected graph", "seed", NULL};
+    char **c = ar;
+
     
     
     /* Check for proper number of input and output arguments. */
-    if ((nrhs < 6 ) || (nrhs > 9))
+    if ((nrhs < 10 ) || (nrhs > 12))
         mexErrMsgTxt("Incorrect number of input arguments: "
-                     "[x,y,n_edges,edge_i,edge_j,edge_weights, node_components] "
-                     "= waxman_gen3(s, q, N, M, #Threads, "
-                     "BufferSize [, algorithm][, connected][, seed])");
+                     "[x,y,n_edges,edge_i,edge_j,edge_weights, "
+                     "node_components] = conSERN(s, q, N, M, #Threads, "
+                     "BufferSize , algorithm, function, shape, "
+                     " geometry,[connected][, seed])");
     
     if (nlhs > 7)
         mexErrMsgTxt("Too many output arguments: "
-                     "[x,y,n_edges,edge_i,edge_j,edge_weights, node_components] "
-                     "= waxman_gen3(s, q, N, M, #Threads, "
-                     "BufferSize, [, algorithm][, connected][, seed]).");
+                     "[x,y,n_edges,edge_i,edge_j,edge_weights, "
+                     "node_components] = conSERN(s, q, N, M, #Threads, "
+                     "BufferSize , algorithm, function, shape, "
+                     " geometry,[connected][, seed])");
+    
+  
+
+    // check arguments have the correct dimension and
+    // are positive scalars if necessary
+    for (arg = 0; arg < nrhs; arg++)
+    {
+        
+        // check dimensions match
+        if (dimN[arg] > 0)
+        {
+            if (mxGetN(prhs[arg]) != dimN[arg])
+            {
+                mexPrintf("\nArgument %i (%s) must have dimension N = %i\n",
+                          arg + 1, *c, dimN[arg]);
+                mexErrMsgTxt("Error in arguments");
+            }
+        }
+        else // dimN represents a minimum dimension
+        {
+            if (mxGetN(prhs[arg]) < -dimN[arg])
+            {
+                mexPrintf("\nArgument %i (%s) must have dimension N >= %i\n",
+                          arg + 1, *c, -dimN[arg]);
+                mexErrMsgTxt("Error in arguments");
+            }
+        }
+        
+        
+        // check dimensions match
+        if (dimM[arg] > 0)
+        {
+            if (mxGetM(prhs[arg]) != dimM[arg])
+            {
+                mexPrintf("\nArgument %i (%s) must have dimension M = %i\n",
+                          arg + 1, *c, dimM[arg]);
+                mexErrMsgTxt("Error in arguments");
+            }
+        }
+        else // dimM represents a minimum dimension
+        {
+            if (mxGetM(prhs[arg]) < -dimM[arg])
+            {
+                mexPrintf("\nArgument %i (%s) must have dimension M >= %i\n",
+                          arg + 1, *c, -dimM[arg]);
+                mexErrMsgTxt("Error in arguments");
+            }
+            
+        }
+        
+        // all the scalars are positive and some of them must be non zero
+        if ((dimN[arg] == 1) && (dimN[arg] == 1))
+        {
+            
+            if (*(mxGetPr(prhs[arg])) <= 0.0  && nonZero[arg] == 1)
+            {
+                mexPrintf("\nArgument %i (%s) must be positive\n",
+                          arg + 1, *c);
+                mexErrMsgTxt("Error in arguments");
+            }
+            
+            if (*(mxGetPr(prhs[arg])) < 0.0  && nonZero[arg] == 0)
+            {
+                mexPrintf("\nArgument %i (%s) must be non negative\n",
+                          arg + 1, *c);
+                mexErrMsgTxt("Error in arguments");
+            }
+        }
+        c++;
+    }
+    
+    // before we start clear all our structures
+    memset(&nodes, 0, sizeof(NodeList));
+    memset(&edges, 0, sizeof(EdgeList));
+    memset(&options, 0, sizeof(Options));
     
     
-    
-    
-    
+    /* check what optional outputs are required */
     /* only allocate space for the "distances" if required */
     if (nlhs >= 6) options.weights_enabled = 1;
     
     /* only allocate space for node component identifiers if required */
     if(nlhs == 7) options.components_enabled = 1;
     
-    // check arguments are positive scalars
-    for (arg = 0; arg < nrhs; arg++)
-    {
-        
-        
-        if (mxGetM(prhs[arg]) != 1 ||
-            mxGetN(prhs[arg]) != 1)
-            
-        {
-            mexPrintf("\nArgument %i (%s) must be a scalar\n",
-                      arg + 1, *i);
-            mexErrMsgTxt("Error in arguments");
-        }
-        
-        if    ((*(mxGetPr(prhs[arg]))) <= 0.0  && positive_arg[arg] == 1)
-        {
-            mexPrintf("\nArgument %i (%s) must be positive\n",
-                      arg + 1, *i);
-            mexErrMsgTxt("Error in arguments");
-        }
-        
-        if    ((*(mxGetPr(prhs[arg]))) < 0.0  && positive_arg[arg] == 0)
-        {
-            mexPrintf("\nArgument %i (%s) must be non neagtive\n",
-                      arg + 1, *i);
-            mexErrMsgTxt("Error in arguments");
-        }
-        i++;
-    }
-    
     /* Get the input arguments */
-    /* probability (i,j) connected = beta * exp(-s * distance(i,j) */
-    options.s = mxGetScalar(prhs[0]);
-    options.q = mxGetScalar(prhs[1]);
+    /* probability (i,j) connected = q * exp(-s * distance(i,j) */
+    options.s = mxGetScalar(prhs[S_rhs]);
+    options.q = mxGetScalar(prhs[Q_rhs]);
     
     /* number of nodes in the Waxman graph */
-    options.N = (uint32_t) mxGetScalar(prhs[2]);
+    options.N = (uint32_t) mxGetScalar(prhs[N_rhs]);
     
     /* dimension of array of buckets */
-    options.M = (uint32_t) mxGetScalar(prhs[3]);
+    options.M = (uint32_t) mxGetScalar(prhs[M_rhs]);
     
     /* number of threads to use */
-    options.ThreadCount = (uint32_t) mxGetScalar(prhs[4]);
+    options.ThreadCount = (uint32_t) mxGetScalar(prhs[THREADS_rhs]);
     
     /* number of edges in buffer for each thread */
-    options.BufferSize = (uint32_t) mxGetScalar(prhs[5]);
+    options.BufferSize = (uint32_t) mxGetScalar(prhs[BUFFER_SIZE_rhs]);
     
     /* fast algorithm = 0 N^2 algorithm = 1 so default is fast */
-    options.algorithm = (nrhs >= 7) ? (uint32_t) mxGetScalar(prhs[6]) : 0;
+    options.algorithm =  (uint32_t) mxGetScalar(prhs[ALGORITH_rhs]);
+
+    /* 0 is the waxman distance function others coming later */
+    options.distanceFunction =  (uint32_t) mxGetScalar(prhs[ALGORITH_rhs]);
+
     
     /* default is to leave the graph disconnected */
-    options.connected =  (nrhs >= 8) ? (uint32_t) mxGetScalar(prhs[7]) : 0;
-    
+    options.connected =
+        (nrhs >= 10) ? (uint32_t) mxGetScalar(prhs[CONNECTED_rhs]) : 0;
     
     /* initialize random number generator */
     // TODO connect this to the random number generator in WaxmanGen
-    options.seedval = (nrhs == 9) ? (uint32_t) mxGetScalar(prhs[8]) :
+    options.seedval = (nrhs == 12) ? (uint32_t) mxGetScalar(prhs[SEED_rhs]) :
     (uint32_t) time(0);
+    
+
+    
+    /* handle the shape and the geometry*/
+    data = mxDuplicateArray(prhs[REGION_GEOMETRY_rhs]);
+    vector  = (VectorStruct *) mxGetData(data);
+    assert(mxGetM(data) == 2); // we already checked this
+    
+    polygon = polygonNew();
+    
+    for (i = 0;i <  mxGetN(data); i++) polygonAppend(polygon, vector + i);
+    
+    geometry = geometryGenerate( &options,
+                                (GeometryType)
+                                mxGetScalar(prhs[REGION_SHAPE_rhs]),
+                                polygon);
+
     
     /* create output matrices */
     node_array_sz[0] = options.N;
@@ -126,18 +210,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     plhs[1] = mxCreateNumericArray(1, node_array_sz, mxSINGLE_CLASS, mxREAL);
     nodes.y = (float *) mxGetPr(plhs[1]);
     plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    n_edges = mxGetPr(plhs[2]);
+    pEdgeCount = mxGetPr(plhs[2]);
     
     /* create the graph */
-    edges.growth = 1.5 * options.N;
+    // TODO function to set initial size close to that needed
+    edges.growth = 4 * options.N;
     
-    polygon = polygonNew();
-    polygonAppend(polygon, &a);
-    polygonAppend(polygon, &b);
-    geometry = geometryGenerate(&options, rectangle, polygon);
     GenSERN(&nodes, &edges, &options, geometry);
     
-    n_edges[0] = edges.count;
+    pEdgeCount[0] = edges.count;
     
     plhs[3] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);
     plhs[4] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);

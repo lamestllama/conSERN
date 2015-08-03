@@ -19,6 +19,7 @@ typedef struct
     uint32_t BufferSize;
     uint32_t connected;
     uint32_t algorithm;
+    uint32_t distanceFunction;
     uint32_t seedval;
     uint32_t components_enabled;
     uint32_t weights_enabled;

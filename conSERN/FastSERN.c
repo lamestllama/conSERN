@@ -49,11 +49,11 @@ void * BusyWork(void *t)
     
     thread_data = (ThreadDataStruct *)t;
     
-    M = thread_data->M;
-    s = thread_data->s;
-    q = thread_data->q;
+    M = thread_data->options->M;
+    s = thread_data->options->s;
+    q = thread_data->options->q;
     edges = thread_data->edges;
-    options =thread_data->options;
+    options = thread_data->options;
     buckets = thread_data->buckets;
     Q = thread_data->Q;
     
@@ -276,10 +276,10 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
         thread_data[t].thread_id = t;
         thread_data[t].thread_count = options->ThreadCount;
         
-        thread_data[t].N = options->N;
-        thread_data[t].M = options->M;
-        thread_data[t].s = options->s;
-        thread_data[t].q = options->q;
+   //     thread_data[t].N = options->N;
+   //     thread_data[t].M = options->M;
+   //     thread_data[t].s = options->s;
+   //     thread_data[t].q = options->q;
         thread_data[t].nodes = nodes;
         thread_data[t].edges = edges;
         thread_data[t].options = options;

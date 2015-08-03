@@ -16,10 +16,10 @@ typedef struct
 {
     uint32_t     thread_id;
     uint32_t     thread_count;
-    uint32_t      N;
-    int          M;
-    double       s;
-    double       q;
+    //uint32_t      N;
+    //int          M;
+    //double       s;
+    //double       q;
     NodeList     *nodes;
     EdgeList     *edges;
     Options      *options;

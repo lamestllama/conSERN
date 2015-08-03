@@ -136,7 +136,6 @@ static inline uint64_t AddEdgeToBuffer(EdgeList *l, EdgeList *b, uint32_t from, 
     
     (b->count)++;
     
-    
     return b->allocated;
 }
 
