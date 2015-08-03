@@ -13,6 +13,7 @@
 		0749138B1B6EEF3100B7C498 /* uniform.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913891B6EEF3100B7C498 /* uniform.c */; };
 		074913911B6F017C00B7C498 /* connected.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749138F1B6F017C00B7C498 /* connected.c */; };
 		074913941B6F026100B7C498 /* edgelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913921B6F026100B7C498 /* edgelist.c */; };
+		074913A11B6F24F000B7C498 /* nodegen.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749139F1B6F24F000B7C498 /* nodegen.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,9 @@
 		074913921B6F026100B7C498 /* edgelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = edgelist.c; sourceTree = "<group>"; };
 		074913931B6F026100B7C498 /* edgelist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edgelist.h; sourceTree = "<group>"; };
 		074913951B6F1B5900B7C498 /* options.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = options.h; sourceTree = "<group>"; };
+		0749139F1B6F24F000B7C498 /* nodegen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nodegen.c; sourceTree = "<group>"; };
+		074913A01B6F24F000B7C498 /* nodegen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodegen.h; sourceTree = "<group>"; };
+		074913A21B6F27FB00B7C498 /* threads.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = threads.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -54,9 +58,12 @@
 		074913761B6E4FDE00B7C498 /* conSERN */ = {
 			isa = PBXGroup;
 			children = (
+				0749139F1B6F24F000B7C498 /* nodegen.c */,
+				074913A01B6F24F000B7C498 /* nodegen.h */,
 				074913771B6E4FDE00B7C498 /* conSERN.h */,
 				074913781B6E4FDE00B7C498 /* conSERN.c */,
 				074913801B6E514000B7C498 /* FastSERN.c */,
+				074913A21B6F27FB00B7C498 /* threads.h */,
 				0749138F1B6F017C00B7C498 /* connected.c */,
 				074913901B6F017C00B7C498 /* connected.h */,
 				074913921B6F026100B7C498 /* edgelist.c */,
@@ -128,6 +135,7 @@
 			files = (
 				074913791B6E4FDE00B7C498 /* conSERN.c in Sources */,
 				074913911B6F017C00B7C498 /* connected.c in Sources */,
+				074913A11B6F24F000B7C498 /* nodegen.c in Sources */,
 				074913881B6EEC4D00B7C498 /* binomial.c in Sources */,
 				0749138B1B6EEF3100B7C498 /* uniform.c in Sources */,
 				074913941B6F026100B7C498 /* edgelist.c in Sources */,
@@ -188,7 +196,10 @@
 		0749137E1B6E4FDE00B7C498 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
+				GCC_UNROLL_LOOPS = YES;
+				LLVM_LTO = YES;
 				MATLABROOT = "$(LOCAL_APPS_DIR)/MATLAB_R2015a.app";
 			};
 			name = Debug;
@@ -196,7 +207,10 @@
 		0749137F1B6E4FDE00B7C498 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
+				GCC_UNROLL_LOOPS = YES;
+				LLVM_LTO = YES;
 				MATLABROOT = "$(LOCAL_APPS_DIR)/MATLAB_R2015a.app";
 			};
 			name = Release;

@@ -17,13 +17,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     
     // we nned the edgelist to be initialised empty
+    NodeList nodes = {NULL, NULL};
     EdgeList edges = {NULL, NULL, NULL, NULL, 0, 0, 0, 0};
     Options options = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    GeometryStruct *geometry;
+    PolygonStruct *polygon;
+    VectorStruct a = {0,0};
+    VectorStruct b = {1,1};
+    
     int positive_arg[] = {1, 1, 1, 1, 1, 1, 0, 0, 1};
     
     int arg;
-    //long int seedval;
-    float *x,*y;
     double *n_edges;
     mwSize node_array_sz[2];
     char *ar[] = {"s", "q", "N", "M", "# of threads",
@@ -43,7 +47,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexErrMsgTxt("Too many output arguments: "
                      "[x,y,n_edges,edge_i,edge_j,edge_weights, node_components] "
                      "= waxman_gen3(s, q, N, M, #Threads, "
-                     "BufferSize [, algorithm][, connected][, seed]).");
+                     "BufferSize, [, algorithm][, connected][, seed]).");
+    
+    
+    
+    
     
     /* only allocate space for the "distances" if required */
     if (nlhs >= 6) options.weights_enabled = 1;
@@ -114,16 +122,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     node_array_sz[0] = options.N;
     node_array_sz[1] = 1;
     plhs[0] = mxCreateNumericArray(1, node_array_sz, mxSINGLE_CLASS, mxREAL);
-    x = (float *) mxGetPr(plhs[0]);
+    nodes.x = (float *) mxGetPr(plhs[0]);
     plhs[1] = mxCreateNumericArray(1, node_array_sz, mxSINGLE_CLASS, mxREAL);
-    y = (float *) mxGetPr(plhs[1]);
+    nodes.y = (float *) mxGetPr(plhs[1]);
     plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
     n_edges = mxGetPr(plhs[2]);
     
     /* create the graph */
     edges.growth = 1.5 * options.N;
     
-    WaxmanGen(x, y, &edges, &options);
+    polygon = polygonNew();
+    polygonAppend(polygon, &a);
+    polygonAppend(polygon, &b);
+    geometry = geometryGenerate(&options, rectangle, polygon);
+    GenSERN(&nodes, &edges, &options, geometry);
     
     n_edges[0] = edges.count;
     

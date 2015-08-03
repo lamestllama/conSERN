@@ -8,6 +8,7 @@
 #include "FastSERN.h"
 #include "edgelist.h"
 
+uint32_t lock;
 volatile uint64_t memccpyThreadCount;
 pthread_mutex_t mutex_realloc;
 
@@ -44,6 +45,7 @@ void openEdgeList(EdgeList *l, Options* options)
     
     pthread_mutex_init(&mutex_realloc, NULL);
     memccpyThreadCount = 0;
+    lock =0;
 }
 
 void closeEdgeList(void)

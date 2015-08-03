@@ -20,10 +20,10 @@
 extern  uint32_t *uint_m_z;
 extern  uint32_t *uint_m_w;
 
-extern void FreeUint();
+extern void FreeRandom();
 
 
-static inline void SetSeed(uint32_t u, uint32_t ThreadCount)
+static inline void AllocRandom(uint32_t u, uint32_t ThreadCount)
 {
     
     int i;

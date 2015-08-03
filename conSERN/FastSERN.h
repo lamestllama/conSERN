@@ -12,9 +12,10 @@
 #include <stdint.h>
 #include "edgelist.h"
 #include "options.h"
+#include "nodegen.h"
 
 
-extern int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options);
+extern int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct *geometry);
 
 
 #endif /* defined(__FastSERN__) */

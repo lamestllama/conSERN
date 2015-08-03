@@ -14,7 +14,7 @@ uint32_t *uint_m_z;
 uint32_t *uint_m_w;
 
 
-void FreeUint()
+void FreeRandom()
 {
     free(uint_m_z);
     free(uint_m_w);

@@ -12,6 +12,8 @@
 #include "geometric.h"
 #include "edgelist.h"
 #include "connected.h"
+#include "nodegen.h"
+#include "threads.h"
 #include <pthread.h>
 
 
@@ -26,150 +28,6 @@
 #endif
 
 
-
-
-
-typedef struct
-{
-    float    *x;
-    float    *y;
-    uint64_t count;
-    uint64_t start;
-    int32_t i;
-    int32_t j;
-} BucketStruct;
-
-typedef struct
-{
-    uint32_t     thread_id;
-    uint32_t     thread_count;
-    uint32_t      N;
-    int          M;
-    double       s;
-    double       q;
-    float        *x;
-    float        *y;
-    EdgeList     *edges;
-    Options      *options;
-    BucketStruct *buckets;
-    double       *Q;
-    uint32_t     BufferSize;
-    
-} ThreadDataStruct;
-
-
-
-void SetBucketSizes (const uint32_t M, const uint32_t N, BucketStruct * buckets)
-{
-    uint32_t k;
-    double p;
-    double sum_p = 0.0;
-    uint32_t sum_n = 0;
-    
-    
-    /* the probability a randomly generated node
-     will end up in a particular bucket t */
-    p = 1.0/(double)(M * M);
-    
-    /* multinomial.  we have N nodes to distribute amongst
-     M x M  boxes each of the boxes has equal probability
-     of being chosen. Implemented one box at a time using
-     binomial and conditioning on the distribution of the
-     nodes in the previous boxes */
-    for (k = 0; k < M * M ; k++)
-    {
-        buckets[k].count = GetBinomialRand(p / (1.0 - sum_p), N - sum_n);
-        sum_p += p;
-        sum_n += buckets[k].count;
-    }
-    
-}
-
-
-
-
-void GenerateNodes(uint32_t M, uint32_t N, BucketStruct *buckets)
-{
-    
-    double x_offset, y_offset;
-    uint32_t bucket_x = 0, bucket_y = 0, node_number;
-    uint32_t i, j;
-    // TODO this is what we need to thread
-    for(i = 0; i < M * M; i++)
-    {
-        for(j = 0; j < buckets[i].count; j++)
-        {
-            buckets[i].x[j] = ((double)buckets[i].i + GetUniform(0)) / (double)M;
-            buckets[i].y[j] = ((double)buckets[i].j + GetUniform(0)) / (double)M;
-        }
-    }
-}
-
-
-BucketStruct *GenerateBuckets(uint32_t M, uint32_t N, float *x, float *y)
-{
-    uint32_t i;
-    uint32_t offset;
-    
-    /* calloc used to zero all fields */
-    BucketStruct * buckets = calloc(M * M, sizeof(BucketStruct));
-    
-    
-    SetBucketSizes (M,  N, buckets);
-    
-    
-    /* Set each bucket to point at the appropriate part of the node arrays */
-    offset = 0;
-    buckets[i].start = 1;
-    buckets[0].x = x;
-    buckets[0].y = y;
-    buckets[0].i = 0;
-    buckets[0].j = 0;
-    
-    for(i = 1; i < M * M; i++)
-    {
-        buckets[i].start = buckets[i -1 ].start + buckets[i - 1].count ;
-        buckets[i].x = x + buckets[i].start - 1;
-        buckets[i].y = y + buckets[i].start - 1;
-        buckets[i].i = i / M;
-        buckets[i].j = i % M;
-    
-    }
-    
-    return buckets;
-}
-
-
-
-/* relies on the surface being a unit square */
-double *CreateQ(uint32_t M, double s)
-{
-    double *Q;
-    uint64_t i, j;
-    double distance;
-    
-    /* calloc initialises with zeros */
-    double *t = calloc(M, sizeof(double));
-    
-    for (i = 1; i < M; i++) t[i] = i - 1;
-    
-    Q = malloc((size_t) sizeof(double) * M * M);
-    
-    for(i = 0; i < M; i++)
-    {
-        for(j = 0; j < M; j++)
-        {
-            distance = sqrt(t[i] * t[i] + t[j] * t[j]) / M ;
-            Q[i * M + j] =  exp(-s*distance);
-        }
-    }
-    
-    free(t);
-    return Q;
-}
-
-
-
 void * BusyWork(void *t)
 {
     
@@ -179,12 +37,9 @@ void * BusyWork(void *t)
     BucketStruct bucket_A, bucket_B;//, *buckets;
     
     ThreadDataStruct *thread_data;
-    //int64_t     N;
     int         M;
     double      s;
     double      q;
-    float       *x;
-    float       *y;
     EdgeList    *edges;
     Options     *options;
     BucketStruct *buckets;
@@ -194,12 +49,9 @@ void * BusyWork(void *t)
     
     thread_data = (ThreadDataStruct *)t;
     
-    //N = thread_data->N;
     M = thread_data->M;
     s = thread_data->s;
     q = thread_data->q;
-    x = thread_data->x;
-    y = thread_data->y;
     edges = thread_data->edges;
     options =thread_data->options;
     buckets = thread_data->buckets;
@@ -354,9 +206,38 @@ void * BusyWork(void *t)
 
 
 
+// no longer relies on the surface being a unit square
+double *CreateQ(const GeometryStruct *g, const Options *options)
+{
+    double distance;
+    double *Q;
+    uint64_t i;
+    uint64_t j;
+    
+    /* calloc initialises with zeros */
+    double *t = calloc(options->M, sizeof(double));
+    assert(NULL != t);
+    
+    for (i = 1; i < options->M; i++) t[i] = (i - 1) * g->bucketSize;
+    
+    Q = malloc((size_t) sizeof(double) * g->Mx * g->My);
+    assert(NULL != Q);
+    for(j = 0; j < g->My; j++)
+    {
+        for(i = 0; i < g->Mx; i++)
+        {
+            
+            distance = sqrt(t[i] * t[i] + t[j] * t[j]);
+            Q[i + g->Mx * j] =  exp(-options->s*distance);
+        }
+    }
+    
+    free(t);
+    return Q;
+}
 
 
-int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options)
+int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* geometry)
 {
     pthread_t *threads;
     pthread_attr_t attr;
@@ -369,19 +250,78 @@ int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options)
     double *Q;
     
     // fprintf(stdout, " s = %.8f, q = %.8f, N = %d, M = %d \n", options->s, options->q, options->N, options->M);
-
-    SetSeed(options->seedval, options->ThreadCount); 
     
-    Q = CreateQ(options->M, options->s);
+    // start up the random number generator
+    AllocRandom(options->seedval, options->ThreadCount);
     
-    buckets = GenerateBuckets(options->M, options->N, x, y);
+    Q = CreateQ(geometry, options);
     
-    // to do thread this function
-    GenerateNodes(options->M, options->N, buckets);
+//------------------------------------------------------------------------------
+//  NODE GENERATION
+//
+//------------------------------------------------------------------------------
+  
+    // creates bucket structures with pre-initialised node counts
+    // and their offsets into the node list.
+    buckets = GenerateBuckets(options, geometry, nodes);
     
+    // create an array of thread structures pre-initialised
+    // with everything a worker thread needs to create nodes
+    // or edges.
     
     threads = calloc(options->ThreadCount, sizeof(pthread_t));
     thread_data = calloc(options->ThreadCount, sizeof(ThreadDataStruct));
+    for(t=0; t < options->ThreadCount; t++)
+    {
+        thread_data[t].thread_id = t;
+        thread_data[t].thread_count = options->ThreadCount;
+        
+        thread_data[t].N = options->N;
+        thread_data[t].M = options->M;
+        thread_data[t].s = options->s;
+        thread_data[t].q = options->q;
+        thread_data[t].nodes = nodes;
+        thread_data[t].edges = edges;
+        thread_data[t].options = options;
+        thread_data[t].buckets = buckets;
+        thread_data[t].geometry = geometry;
+        thread_data[t].Q = Q;
+        thread_data[t].BufferSize = options->BufferSize;
+        
+    }
+    
+    
+    /* Initialize and set thread detached attribute */
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    
+    for(t=0; t < options->ThreadCount; t++)
+    {
+        
+        rc = pthread_create(&threads[t], &attr, (void *) &GenerateNodes,(void *) &thread_data[t]);
+        if (rc)
+        {
+            // TODO: some error handling here
+            exit(-1);
+        }
+    }
+    
+    /* Free attribute and wait for the other threads */
+    
+    for(t = 0; t < options->ThreadCount; t++)
+    {
+        rc = pthread_join(threads[t], &status);
+        if (rc)
+        {
+            // TODO: some error handling here
+            exit(-1);
+        }
+        
+    }
+    pthread_attr_destroy(&attr);
+    
+//-----------------------------------------------------------------------------
+//  EDGE GENERATION
     
     /* Initialize and set thread detached attribute */
     pthread_attr_init(&attr);
@@ -392,20 +332,7 @@ int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options)
     
     for(t=0; t < options->ThreadCount; t++)
     {
-        thread_data[t].thread_id = t;
-        thread_data[t].thread_count = options->ThreadCount;
         
-        thread_data[t].N = options->N;
-        thread_data[t].M = options->M;
-        thread_data[t].s = options->s;
-        thread_data[t].q = options->q;
-        thread_data[t].x = x;
-        thread_data[t].y = y;
-        thread_data[t].edges = edges;
-        thread_data[t].options = options;
-        thread_data[t].buckets = buckets;
-        thread_data[t].Q = Q;
-        thread_data[t].BufferSize = options->BufferSize;
         
         rc = pthread_create(&threads[t], &attr, BusyWork,(void *) &thread_data[t]);
         if (rc)
@@ -453,7 +380,7 @@ int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options)
             component_count = MarkConnectedComponents(options->N, edges);
         }
         MakeConnected(options->N, edges, options->BufferSize,
-                      x, y, component_count);
+                      nodes->x, nodes->y, component_count);
     }
     
     
@@ -463,9 +390,7 @@ int WaxmanGen(float* x, float* y, EdgeList* edges, Options* options)
     free(threads);
     free(thread_data);
     closeEdgeList();
-    
-    // free up the random number generator buffer;
-    FreeUint();
+    FreeRandom();
     
     // fprintf(stdout, " N = %d, M = %d, edges = %d \n", options->N, options->M, edges->count);  
 
