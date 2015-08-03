@@ -15,6 +15,7 @@
 		074913941B6F026100B7C498 /* edgelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913921B6F026100B7C498 /* edgelist.c */; };
 		074913A11B6F24F000B7C498 /* nodegen.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749139F1B6F24F000B7C498 /* nodegen.c */; };
 		0762553F1B6FB0D70039A31B /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = 0762553E1B6FB0D70039A31B /* test.m */; };
+		076255421B6FC62F0039A31B /* edgeprobfuncs.c in Sources */ = {isa = PBXBuildFile; fileRef = 076255401B6FC62F0039A31B /* edgeprobfuncs.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,8 @@
 		074913A01B6F24F000B7C498 /* nodegen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nodegen.h; sourceTree = "<group>"; };
 		074913A21B6F27FB00B7C498 /* threads.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = threads.h; sourceTree = "<group>"; };
 		0762553E1B6FB0D70039A31B /* test.m */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = test.m; sourceTree = "<group>"; };
+		076255401B6FC62F0039A31B /* edgeprobfuncs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = edgeprobfuncs.c; sourceTree = "<group>"; };
+		076255411B6FC62F0039A31B /* edgeprobfuncs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edgeprobfuncs.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -65,6 +68,8 @@
 				074913771B6E4FDE00B7C498 /* conSERN.h */,
 				074913781B6E4FDE00B7C498 /* conSERN.c */,
 				074913801B6E514000B7C498 /* FastSERN.c */,
+				076255401B6FC62F0039A31B /* edgeprobfuncs.c */,
+				076255411B6FC62F0039A31B /* edgeprobfuncs.h */,
 				074913A21B6F27FB00B7C498 /* threads.h */,
 				0749138F1B6F017C00B7C498 /* connected.c */,
 				074913901B6F017C00B7C498 /* connected.h */,
@@ -142,6 +147,7 @@
 				074913A11B6F24F000B7C498 /* nodegen.c in Sources */,
 				074913881B6EEC4D00B7C498 /* binomial.c in Sources */,
 				0749138B1B6EEF3100B7C498 /* uniform.c in Sources */,
+				076255421B6FC62F0039A31B /* edgeprobfuncs.c in Sources */,
 				074913941B6F026100B7C498 /* edgelist.c in Sources */,
 				074913821B6E514000B7C498 /* FastSERN.c in Sources */,
 			);

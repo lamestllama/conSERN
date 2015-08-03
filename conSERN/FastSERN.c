@@ -52,7 +52,7 @@ void * BusyWork(void *t)
     
     Mx = thread_data->geometry->Mx;
     My = thread_data->geometry->My;
-    s = thread_data->options->s;
+    s = thread_data->options->s1;
     q = thread_data->options->q;
     edges = thread_data->edges;
     options = thread_data->options;
@@ -94,7 +94,7 @@ void * BusyWork(void *t)
                 distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                 
                 
-                if (GetUniform(thread_data->thread_id) < exp(-s * distance))
+                if (GetUniform(thread_data->thread_id) < options->distFunction(options->s1, options->s2, distance))
                     AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t)i,
                                     bucket_A.start + (uint32_t) j, distance);
                 
@@ -132,7 +132,7 @@ void * BusyWork(void *t)
                     y_diff = bucket_A.y[i] - bucket_B.y[j];
                     distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                     
-                    if (GetUniform(thread_data->thread_id) * p < exp(-s * distance))
+                    if (GetUniform(thread_data->thread_id) * p < options->distFunction(options->s1, options->s2, distance))
                         AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t) i,
                                         bucket_B.start + (uint32_t)j, distance);
                 }
@@ -159,7 +159,7 @@ void * BusyWork(void *t)
                     y_diff = bucket_A.y[i] - bucket_A.y[j];
                     distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                     
-                    if (GetUniform(thread_data->thread_id) < q * exp(-s * distance))
+                    if (GetUniform(thread_data->thread_id) < q * options->distFunction(options->s1, options->s2, distance))
                         AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t)i,
                                         bucket_A.start + (uint32_t) j, distance);
                 }
@@ -185,7 +185,7 @@ void * BusyWork(void *t)
                         y_diff = bucket_A.y[i] - bucket_B.y[j];
                         distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                         
-                        if (GetUniform(thread_data->thread_id) < q * exp(-s * distance))
+                        if (GetUniform(thread_data->thread_id) < q * options->distFunction(options->s1, options->s2, distance))
                             AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t) i,
                                             bucket_B.start + (uint32_t)j, distance);
                     }
@@ -231,7 +231,7 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
         {
             
             distance = sqrt(t[i] * t[i] + t[j] * t[j]);
-            Q[i + g->Mx * j] =  exp(-options->s*distance);
+            Q[i + g->Mx * j] = options->distFunction(options->s1, options->s2, distance);
         }
     }
     

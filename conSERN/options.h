@@ -8,10 +8,13 @@
 
 #ifndef conSERN_Header_h
 #define conSERN_Header_h
+#include "edgeprobfuncs.h"
 
 typedef struct
 {
-    double s;
+    uint32_t distanceFunction;
+    double s1;
+    double s2;
     double q;
     uint32_t N;
     uint32_t M;
@@ -19,10 +22,10 @@ typedef struct
     uint32_t BufferSize;
     uint32_t connected;
     uint32_t algorithm;
-    uint32_t distanceFunction;
     uint32_t seedval;
     uint32_t components_enabled;
     uint32_t weights_enabled;
+    ProbabilityFunction distFunction;
 } Options;
 
 #endif

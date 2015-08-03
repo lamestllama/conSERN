@@ -10,16 +10,17 @@
 #include "conSERN.h"
 #include "FastSERN.h"
 #include "mex.h"
+#include "edgeprobfuncs.h"
 #include <time.h>
 
-#define S_rhs               0
-#define Q_rhs               1
-#define N_rhs               2
-#define M_rhs               3
-#define THREADS_rhs         4
-#define BUFFER_SIZE_rhs     5
-#define ALGORITH_rhs        6
-#define DISTANCE_FUN_rhs    7
+#define DISTANCE_FUN_rhs    0
+#define S_rhs               1
+#define Q_rhs               2
+#define N_rhs               3
+#define M_rhs               4
+#define THREADS_rhs         5
+#define BUFFER_SIZE_rhs     6
+#define ALGORITH_rhs        7
 #define REGION_SHAPE_rhs    8
 #define REGION_GEOMETRY_rhs 9
 #define CONNECTED_rhs       10
@@ -31,6 +32,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mxArray *data;
     mwSize node_array_sz[2];
     double *pEdgeCount;
+    double *s;
     NodeList nodes;
     EdgeList edges;
     Options options;
@@ -40,15 +42,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int i;
     int arg;
 
-    int nonZero[] = {0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
-    int dimM[]    = {1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1};
-    int dimN[]    = {1, 1, 1, 1, 1, 1, 1, 1, 1, -2, 1, 1};
+    int nonZero[] = {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
+    int dimM[]    = {1,  1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1};
+    int dimN[]    = {1, -1, 1, 1, 1, 1, 1, 1, 1, -2, 1, 1};
     
     
-    char *ar[] = {  "s", "q", "N", "M",
+    char *ar[] = { "distance function", "s", "q", "N", "M",
                     "number of threads", "buffer size",
-                    "algorithm", "distance function",
-                    "region shape", "region geometry",
+                    "algorithm", "region shape", "region geometry",
                     "connected graph", "seed", NULL};
     char **c = ar;
 
@@ -58,17 +59,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if ((nrhs < 10 ) || (nrhs > 12))
         mexErrMsgTxt("Incorrect number of input arguments: "
                      "[x,y,n_edges,edge_i,edge_j,edge_weights, "
-                     "node_components] = conSERN(s, q, N, M, #Threads, "
-                     "BufferSize , algorithm, function, shape, "
+                     "node_components] = conSERN( Distancefunction, "
+                     "s, q, N, M, #Threads, "
+                     "BufferSize , algorithm, Distancefunction, shape, "
                      " geometry,[connected][, seed])");
     
     if (nlhs > 7)
         mexErrMsgTxt("Too many output arguments: "
                      "[x,y,n_edges,edge_i,edge_j,edge_weights, "
-                     "node_components] = conSERN(s, q, N, M, #Threads, "
-                     "BufferSize , algorithm, function, shape, "
+                     "node_components] = conSERN( Distancefunction, "
+                     "s, q, N, M, #Threads, "
+                     "BufferSize , algorithm, Distancefunction, shape, "
                      " geometry,[connected][, seed])");
-    
   
 
     // check arguments have the correct dimension and
@@ -153,11 +155,39 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nlhs == 7) options.components_enabled = 1;
     
     /* Get the input arguments */
-    /* probability (i,j) connected = q * exp(-s * distance(i,j) */
-    options.s = mxGetScalar(prhs[S_rhs]);
+    
+    /* 0 is the waxman distance function others coming later */
+    options.distanceFunction =  (uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs]);
+    
+    options.distFunction = distfunc[options.distanceFunction];
+    
+    /* probability (i,j) connected = q * f(s, s1, d) */ 
+    
+    
+    data = mxDuplicateArray(prhs[S_rhs]);
+    
+   // we already checked this
+    
+    if (mxGetN(data) == 1)
+        options.s1 = mxGetScalar(prhs[S_rhs]);
+    else // we have two S parameters
+    {
+        if (mxGetN(data) == 2)
+        {
+            s = (double *) mxGetData(data);
+            options.s1 = s[1];
+            options.s2 = s[2];
+        }
+        else
+        {
+            mexErrMsgTxt("Only two values for s allowed");
+        }
+        
+    }
+   
     options.q = mxGetScalar(prhs[Q_rhs]);
     
-    /* number of nodes in the Waxman graph */
+    /* number of nodes in the  graph */
     options.N = (uint32_t) mxGetScalar(prhs[N_rhs]);
     
     /* dimension of array of buckets */
@@ -172,8 +202,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* fast algorithm = 0 N^2 algorithm = 1 so default is fast */
     options.algorithm =  (uint32_t) mxGetScalar(prhs[ALGORITH_rhs]);
 
-    /* 0 is the waxman distance function others coming later */
-    options.distanceFunction =  (uint32_t) mxGetScalar(prhs[ALGORITH_rhs]);
+   
 
     
     /* default is to leave the graph disconnected */
