@@ -47,3 +47,10 @@ double exponential(double L, double unused, double d)
     return exp(-d / (L - d));
 }
 
+double maxentropy(double s, double unused, double d)
+{
+   // to do test this against a version with a
+   // temporary variable for speed
+    return exp(-s * d)/ (1 + exp(-s * d));
+}
+

@@ -36,7 +36,19 @@ extern double cauchy(double theta1, double unused, double d);
 extern double exponential(double L, double unused, double d);
 
 
-static ProbabilityFunction  distfunc[] = {waxman, clipped_waxman, constant, threshold, powerlaw, cauchy, exponential};
+extern double maxentropy(double s, double unused, double d);
+
+
+static ProbabilityFunction  distfunc[] =
+    {   waxman,
+        clipped_waxman,
+        constant,
+        threshold,
+        powerlaw,
+        cauchy,
+        exponential,
+        maxentropy
+    };
 
 
 #endif /* defined(__conSERN__edgeprobfuncs__) */

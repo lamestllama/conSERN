@@ -13,6 +13,10 @@
 #include "edgeprobfuncs.h"
 #include <time.h>
 
+#define NUM_ELEMS(arr)                                                 \
+(sizeof (struct {int not_an_array:((void*)&(arr) == &(arr)[0]);}) * 0 \
++ sizeof (arr) / sizeof (*(arr)))
+
 #define DISTANCE_FUN_rhs    0
 #define S_rhs               1
 #define Q_rhs               2
@@ -156,11 +160,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     /* Get the input arguments */
     options.distanceFunction =  (uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs]);
+    
+    if (options.distanceFunction >= NUM_ELEMS(distfunc))
+    {
+        mexErrMsgTxt("unimplemented distance function selected");
+    }
+    
     /* probability (i,j) connected various functions */
     options.distFunction = distfunc[options.distanceFunction];
-    
-    
-    
     
     data = mxDuplicateArray(prhs[S_rhs]);
     
