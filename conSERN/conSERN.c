@@ -155,13 +155,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if(nlhs == 7) options.components_enabled = 1;
     
     /* Get the input arguments */
-    
-    /* 0 is the waxman distance function others coming later */
     options.distanceFunction =  (uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs]);
-    
+    /* probability (i,j) connected various functions */
     options.distFunction = distfunc[options.distanceFunction];
     
-    /* probability (i,j) connected = q * f(s, s1, d) */ 
+    
     
     
     data = mxDuplicateArray(prhs[S_rhs]);
@@ -210,7 +208,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         (nrhs >= 10) ? (uint32_t) mxGetScalar(prhs[CONNECTED_rhs]) : 0;
     
     /* initialize random number generator */
-    // TODO connect this to the random number generator in WaxmanGen
     options.seedval = (nrhs == 12) ? (uint32_t) mxGetScalar(prhs[SEED_rhs]) :
     (uint32_t) time(0);
     
