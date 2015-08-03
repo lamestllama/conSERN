@@ -9,7 +9,7 @@
 #include "edgelist.h"
 
 uint32_t lock;
-volatile uint64_t memccpyThreadCount;
+uint64_t memccpyThreadCount;
 pthread_mutex_t mutex_realloc;
 
 uint64_t AllocateEdgeBuffer(EdgeList *l, uint32_t buffer_size, uint32_t enable_weights)

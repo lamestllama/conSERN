@@ -37,7 +37,8 @@ void * BusyWork(void *t)
     BucketStruct bucket_A, bucket_B;//, *buckets;
     
     ThreadDataStruct *thread_data;
-    int         M;
+    uint32_t         Mx;
+    uint32_t         My;
     double      s;
     double      q;
     EdgeList    *edges;
@@ -49,7 +50,8 @@ void * BusyWork(void *t)
     
     thread_data = (ThreadDataStruct *)t;
     
-    M = thread_data->options->M;
+    Mx = thread_data->geometry->Mx;
+    My = thread_data->geometry->My;
     s = thread_data->options->s;
     q = thread_data->options->q;
     edges = thread_data->edges;
@@ -70,7 +72,7 @@ void * BusyWork(void *t)
         	
 
         
-        for (bucket_a = thread_data->thread_id; bucket_a < M * M;
+        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
 	    
@@ -102,18 +104,19 @@ void * BusyWork(void *t)
         
         
         // Generate inter bucket edges between bucket_a and bucket_b
-        for (bucket_a = thread_data->thread_id; bucket_a < M * M;
+        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
             bucket_A = buckets[bucket_a];
             
-            for (bucket_b = bucket_a + 1; bucket_b < M * M; bucket_b++)
+            for (bucket_b = bucket_a + 1; bucket_b < Mx * My; bucket_b++)
             {
                 k = -1;
                 bucket_B = buckets[bucket_b];
                 
-                p =  Q[abs(bucket_A.i - bucket_B.i) * M +
-                       abs(bucket_A.j - bucket_B.j)];
+                
+                p =  Q[abs(bucket_A.i - bucket_B.i) +
+                       Mx * abs(bucket_A.j - bucket_B.j)];
                 lambda = -log2(1 - p * q);
                 
                 S = bucket_A.count * bucket_B.count;
@@ -142,7 +145,7 @@ void * BusyWork(void *t)
         // for now any other option means use the N^2 algorithm
          /* Generate intra bucket edges in bucket_a */
         
-        for (bucket_a = thread_data->thread_id; bucket_a < M * M;
+        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
 
@@ -165,12 +168,12 @@ void * BusyWork(void *t)
         
             
         // Generate inter bucket edges between bucket_a and bucket_b
-        for (bucket_a = thread_data->thread_id; bucket_a < M * M;
+        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
             bucket_A = buckets[bucket_a];
             
-            for (bucket_b = bucket_a + 1; bucket_b < M * M; bucket_b++)
+            for (bucket_b = bucket_a + 1; bucket_b < Mx * My; bucket_b++)
             {
                 bucket_B = buckets[bucket_b];
                 for ( i = 0; i < bucket_A.count; i++)
@@ -237,6 +240,10 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
 }
 
 
+
+
+
+
 int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* geometry)
 {
     pthread_t *threads;
@@ -275,11 +282,6 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     {
         thread_data[t].thread_id = t;
         thread_data[t].thread_count = options->ThreadCount;
-        
-   //     thread_data[t].N = options->N;
-   //     thread_data[t].M = options->M;
-   //     thread_data[t].s = options->s;
-   //     thread_data[t].q = options->q;
         thread_data[t].nodes = nodes;
         thread_data[t].edges = edges;
         thread_data[t].options = options;

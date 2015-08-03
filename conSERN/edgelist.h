@@ -25,7 +25,7 @@
 #include <pthread.h>
 
 
-extern volatile uint64_t memccpyThreadCount;
+extern uint64_t memccpyThreadCount;
 extern pthread_mutex_t mutex_realloc;
 
 typedef struct
