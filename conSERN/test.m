@@ -11,6 +11,7 @@ threshold=3
 powerlaw=4
 cauchy=5
 exponential=6
+maxentropy=7
 
 
 A1= [[9;11], [6;8], [4;5], [10;3]]
