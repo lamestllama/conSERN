@@ -456,8 +456,6 @@ GeometryStruct *geometryGenerate(Options* options,
     g = calloc(1, sizeof(GeometryStruct));
     assert(NULL != g);
     
-//    g->N = N;
-//    g->M = M;
     g->type = type;
     
     g->polygon = p;

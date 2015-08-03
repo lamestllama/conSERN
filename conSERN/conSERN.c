@@ -217,7 +217,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     edges.growth = 4 * options.N;
     
     GenSERN(&nodes, &edges, &options, geometry);
-    
+    polygonFree(polygon);
     pEdgeCount[0] = edges.count;
     
     plhs[3] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);

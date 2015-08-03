@@ -89,6 +89,8 @@ void polygonAppend(PolygonStruct *p, const VectorStruct *v);
 
 PolygonStruct *polygonNew(void);
 
+void polygonFree(PolygonStruct *p);
+
 
 
 
