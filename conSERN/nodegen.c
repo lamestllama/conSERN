@@ -156,7 +156,7 @@ double ellipseRectangleIntersectArea(const GeometryStruct *g, const PolygonStruc
         
     }
     
-    for (int i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++)
         s += S[i];
     
     return s;
@@ -448,7 +448,7 @@ uint32_t ellipseInside(const GeometryStruct *g, double x, double y)
 // the region and initialises a GeometryStruct .
 GeometryStruct *geometryGenerate(const Options* options,
                                  GeometryType type,
-                                 const PolygonStruct *p)
+                                PolygonStruct *p)
 {
     uint32_t i;
     GeometryStruct *g;

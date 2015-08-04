@@ -10,122 +10,76 @@
 #include "fastSERN.h"
 #include <stdlib.h>
 #include <math.h>
+#include <inttypes.h>
 
 
-// This is a dog that uses far too much stack and will crash
-void Connect(uint64_t node, uint32_t component, EdgeList* edges, uint32_t* adjacency_list, uint64_t* node_offsets, uint32_t* node_degree)
+
+// Naive set union algorithm is all that is needed atm
+// Returns the root node of x
+int64_t find(int64_t x, int64_t *roots)
 {
-    uint64_t i;
+    // find the root
+    int64_t root = x;
+    while (roots[root] >= 0) root = roots[root];
     
-    // asign this node a component
-    edges->component[node] = component;
-    
-    // for every node that this node is connected to
-    for(i = node_degree[node]; i > 0; i--)
+    // compress paths
+    while (x != root)
     {
-        // if it isnt already assigned a component call this method on it
-        if (edges->component[adjacency_list[node_offsets[node] - i]] == 0)
-            Connect( adjacency_list[node_offsets[node] - i],
-                    component, edges, adjacency_list,
-                    node_offsets, node_degree);
+        int64_t old = x;
+        x = roots[x];
+        roots[old] =  root ;
     }
-    
+    return root ;
+}
+
+// combines the sets that contain x and y
+// false if x and y already in the same set
+bool merge(int64_t x, int64_t y, int64_t *roots)
+{
+    int64_t tmp;
+    x = find(x, roots);
+    y = find(y, roots);
+    if (x == y) return false;
+    // roots[x] is the negated size of the set x is in
+    // make sure x is the larger set
+    if (roots[x] > roots[y]) {tmp = x; x = y; y = tmp;}
+    roots[x] += roots[y];
+    // move the y tree under x
+    roots[y] =  x;
+    return true ;
 }
 
 
-int MarkConnectedComponents(int32_t N,  EdgeList* edges)
+
+int Components(int32_t N,  EdgeList* edges)
 {
+   
+    int64_t *roots;
     int64_t i;
-    uint32_t component;
-    uint32_t *node_degree;
-    uint64_t *node_offsets;
-    uint32_t *adjacency_list;
+    uint32_t c;
     
-    // TODO handle memory allocation error
-    node_degree = calloc(N, sizeof(uint32_t));
-    if (node_degree==NULL) exit (1);
+    roots = (int64_t *) calloc(N, sizeof(int64_t));
     
-    // calculate the degree of each node.
-    // the edges are assuming the nodes are
-    // indexed from 1
-    for (i = 0; i < edges->count; i++)
-    {
-        node_degree[edges->from[i] - 1] += 1;
-        node_degree[edges->to[i] - 1] += 1;
-    }
+    for(i = 0; i < N; i++) roots[i] = -1;
     
-    // TODO handle memory allocation error
-    node_offsets = calloc(N, sizeof(uint64_t));
-    if (node_offsets==NULL) exit (2);
-    // calculate the index of each node in an
-    // array representing an adjacencly list;
-    // the index stored is actually the begining
-    // of the next nodes adjacency list.
-    // i.e
-    // for a square (4 nodes 4 edges)
-    // node_degree = [2 2 2 2]
-    // node_offset = [2 4 6 8]
+    for(i = 0; i < edges->count; i++)
+        merge(edges->from[i] - 1, edges->to[i] - 1, roots);
     
-    node_offsets[0] = node_degree[0];
-    for (i = 1; i < N; i++)
-        node_offsets[i] = node_degree[i] + node_offsets[i - 1];
+    for(i = 0; i < N; i++) find(i, roots);
+   
+    for (i = 0, c = 1; i < N; i++)
+        if (roots[i] < 0)
+            edges->component[i] = c++;
     
-    // TODO handle memory allocation error
-    adjacency_list = calloc(node_offsets[N - 1], sizeof(uint32_t));
+    for (i = 0; i < N; i++)
+        if (roots[i] > 0)
+            edges->component[i] = edges->component[roots[i]];
     
-    // fill in the adjacency list
-    for (i = 0; i < edges->count; i++)
-    {
-        // update the from node in the adjacency list
-        // with the number of the too node
-        // note nodes in the adjacency list are
-        // indexed from zero
-        adjacency_list[node_offsets[edges->from[i] - 1]
-                       - node_degree[edges->from[i] - 1]]
-        = edges->to[i] - 1;
-        
-        // using node_degree as a count of how
-        // many edges left to store for a node
-        node_degree[edges->from[i]-1] -= 1;
-        
-        
-        adjacency_list[node_offsets[edges->to[i] - 1]
-                       - node_degree[edges->to[i] - 1]]
-        = edges->from[i] - 1;
-        
-        node_degree[edges->to[i] - 1] -= 1;
-    }
-    
-    
-    // so using are above example assuming clockwise from top left
-    // numbering adjacency_list = [2 4 1 3 2 4 3 1]
-    
-    // we are going to need node_degrees again so we rebuild them
-    // from the node_offsets;
-    node_degree[0] = (uint32_t)node_offsets[0];
-    for (i = 1; i < N; i++)
-        node_degree[i] = (uint32_t)(node_offsets[i] - node_offsets[i - 1]);
-    
-    
-    // now we are ready for a standard connected components algorithm
-    component = 0;
-    for(i = 0; i < N; i++)
-    {
-        // this node has already been visited
-        if (edges->component[i] > 0) continue;
-        // a new component has been discovered process it
-        component++;
-        edges->component[i] = component;
-        // TODO write an iterative version of this
-        Connect(i, component, edges, adjacency_list, node_offsets, node_degree);
-    }
-    
-    free(adjacency_list);
-    free(node_offsets);
-    free(node_degree);
-    
-    return component;
+    free(roots);
+    return c - 1;
 }
+
+
 
 
 void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,

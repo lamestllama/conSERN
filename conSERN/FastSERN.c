@@ -398,7 +398,7 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         // TODO memory allocation error handling
         // we want this memory zeroed hence the use of calloc
         edges->component = caller_calloc(options->N, sizeof(uint32_t));
-        component_count = MarkConnectedComponents(options->N, edges);
+        component_count = Components(options->N, edges);
     }
     
     // if labeling of connected components is enabled then
@@ -414,7 +414,7 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         if (!options->components_enabled)
         {
             edges->component = caller_calloc(options->N, sizeof(uint32_t));
-            component_count = MarkConnectedComponents(options->N, edges);
+            component_count = Components(options->N, edges);
         }
         MakeConnected(options->N, edges, options->BufferSize,
                       nodes->x, nodes->y, component_count);

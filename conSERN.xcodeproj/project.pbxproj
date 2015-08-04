@@ -212,6 +212,7 @@
 		0749137E1B6E4FDE00B7C498 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
 				GCC_UNROLL_LOOPS = YES;
@@ -223,6 +224,7 @@
 		0749137F1B6E4FDE00B7C498 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
 				GCC_UNROLL_LOOPS = YES;
