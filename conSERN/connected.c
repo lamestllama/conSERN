@@ -14,7 +14,7 @@
 
 
 
-// Naive set union algorithm is all that is needed atm
+// Union Set algorithm
 // Returns the root node of x
 int64_t find(int64_t x, int64_t *roots)
 {
