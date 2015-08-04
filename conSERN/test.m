@@ -122,4 +122,24 @@ plot([A(1,:), A(1,1)] , [A(2,:), A(2,1)], '-')
 plot(x, y, '*');
 hold off
 
+% Show how to handle maxentropy
+% the model defines the thining parameter as being used in the shape function
+% I have not allowed the shape function to take q as a parameter yet
+% so for the moment the maxentropy shape function takes two parameters
+% s1 and q = s2  so you have to manually couple the q inside the shape function
+% with the q used a thinning parameter thus
+A = A3
+shape = polygon
+DistanceFunction = maxentropy
+s = [0.01 0.02]
+q = 0.02
+
+
+[x y n from to] = conSERN(DistanceFunction, s, q, N, Metric, shape, A);
+figure(9)
+hold on
+plot([A(1,:), A(1,1)] , [A(2,:), A(2,1)], '-')
+plot(x, y, '*');
+hold off
+
 
