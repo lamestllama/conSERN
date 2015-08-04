@@ -16,13 +16,15 @@ typedef double (*DistanceFunction)(double xdiff, double ydiff);
 
 extern double euclidean(double xdiff, double ydiff);
 extern double manhattan(double xdiff, double ydiff);
-extern double max(double xdiff, double ydiff);
+extern double maxdist(double xdiff, double ydiff);
+extern double mindist(double xdiff, double ydiff);
 
 
-static DistanceFunction  metrics[] =
+static DistanceFunction  distanceFunctions[] =
 {   euclidean,
     manhattan,
-    max
+    maxdist,
+    mindist
 };
 
 #endif /* defined(__conSERN__metrics__) */

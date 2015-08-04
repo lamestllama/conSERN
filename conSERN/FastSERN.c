@@ -34,67 +34,91 @@ void * BusyWork(void *t)
     
     int64_t i, j, k, S;
     uint32_t bucket_a, bucket_b;
-    double p, lambda, distance, x_diff, y_diff;//, *Q;
-    BucketStruct bucket_A, bucket_B;//, *buckets;
+    double p, lambda, distance, x_diff, y_diff;
+    BucketStruct bucket_A, bucket_B;
     
     ThreadDataStruct *thread_data;
+    uint32_t     thread_id;
+    uint32_t     thread_count;
     uint32_t         Mx;
     uint32_t         My;
-    double      s;
-    double      q;
-    EdgeList    *edges;
-    Options     *options;
-    BucketStruct *buckets;
-    double *Q;
-    EdgeList edge_buffer = {NULL, NULL, NULL, NULL, 0, 0, 0, 0};
+    double       s1, s2, q;
     
+    EdgeList     *edges;
+    BucketStruct *buckets;
+    double       *Q;
+    ProbabilityFunction prob;
+    DistanceFunction dist;
+    
+    EdgeList edge_buffer;
+    
+    // clear the structure used as an edgebuffer
+    memset(&edge_buffer, 0, sizeof(EdgeList));
     
     thread_data = (ThreadDataStruct *)t;
     
+    // store all the frequently used values locally
+    thread_id = thread_data->thread_id;
+    thread_count = thread_data->thread_count;
+    
+    // geometry
     Mx = thread_data->geometry->Mx;
     My = thread_data->geometry->My;
-    s = thread_data->options->s1;
+    
+    // functions for calculating probability and distance
+    // based on chosen model
+    prob = thread_data->options->probGivenDistance;
+    dist = thread_data->options->distance;
+    
+    // shape parameters for model
+    s1 = thread_data->options->s1;
+    s2 = thread_data->options->s1;
+    
+    // thining parameter
     q = thread_data->options->q;
+    
+    // pointer to storage for the edges generated
     edges = thread_data->edges;
-    options = thread_data->options;
+    
+    // the set of buckets that cover the region our graph is on
     buckets = thread_data->buckets;
+    
+    // lookup table of maximum probabilities between buckets
     Q = thread_data->Q;
     
     
-    
+    // create some space to store the edges
     AllocateEdgeBuffer(&edge_buffer, thread_data->BufferSize,
                        edges->weights_enabled);
     
-    if (options->algorithm == 0)
+    if (thread_data->options->algorithm == 0)
     {
-    
+        
         /* Generate intra bucket edges in bucket_a */
         lambda = -log2(1 - q);
-        	    
-        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
-             bucket_a += thread_data->thread_count)
+        
+        for (bucket_a = thread_id; bucket_a < Mx * My; bucket_a += thread_count)
         {
-	    
+            
             k = -1;
             bucket_A = buckets[bucket_a];
-            
             S = (bucket_A.count * (bucket_A.count - 1))/2;
-	    // fprintf(stdout, " q = %.8f, lambda = %.6f, bucket_A.count = %ld, S = %ld \n", q, lambda, bucket_A.count, S);  
             
             // find the next link that might exist
-            while ((k += geom_rand2(lambda, thread_data->thread_id)) < S)
-	    {
+            while ((k += geom_rand2(lambda, thread_id)) < S)
+            {
                 // can we do an integer square root here ?
                 j = 1 + ((((int64_t)sqrtl(8 * k + 1)) - 1) / 2);
-                i = k - j * (j - 1) / 2; 
-
+                i = k - j * (j - 1) / 2;
+                
                 x_diff = bucket_A.x[i] - bucket_A.x[j];
                 y_diff = bucket_A.y[i] - bucket_A.y[j];
-                distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                 
+                distance = dist(x_diff, y_diff);
                 
-                if (GetUniform(thread_data->thread_id) < options->distFunction(options->s1, options->s2, distance))
-                    AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t)i,
+                if (GetUniform(thread_id) < prob(s1, s2, distance))
+                    AddEdgeToBuffer(edges, &edge_buffer,
+                                    bucket_A.start + (uint32_t)i,
                                     bucket_A.start + (uint32_t) j, distance);
                 
             }
@@ -103,8 +127,7 @@ void * BusyWork(void *t)
         
         
         // Generate inter bucket edges between bucket_a and bucket_b
-        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
-             bucket_a += thread_data->thread_count)
+        for (bucket_a = thread_id; bucket_a < Mx * My; bucket_a += thread_count)
         {
             bucket_A = buckets[bucket_a];
             
@@ -113,7 +136,6 @@ void * BusyWork(void *t)
                 k = -1;
                 bucket_B = buckets[bucket_b];
                 
-                
                 p =  Q[abs(bucket_A.i - bucket_B.i) +
                        Mx * abs(bucket_A.j - bucket_B.j)];
                 lambda = -log2(1 - p * q);
@@ -121,7 +143,7 @@ void * BusyWork(void *t)
                 S = bucket_A.count * bucket_B.count;
                 
                 // find the next link that might exist
-                while ((k += geom_rand2(lambda, thread_data->thread_id)) < S)
+                while ((k += geom_rand2(lambda, thread_id)) < S)
                 {
                     
                     i = k % bucket_A.count;
@@ -129,10 +151,12 @@ void * BusyWork(void *t)
                     
                     x_diff = bucket_A.x[i] - bucket_B.x[j];
                     y_diff = bucket_A.y[i] - bucket_B.y[j];
-                    distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                     
-                    if (GetUniform(thread_data->thread_id) * p < options->distFunction(options->s1, options->s2, distance))
-                        AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t) i,
+                    distance = dist(x_diff, y_diff);
+                    
+                    if (GetUniform(thread_id) * p < prob(s1, s2, distance))
+                        AddEdgeToBuffer(edges, &edge_buffer,
+                                        bucket_A.start + (uint32_t)i,
                                         bucket_B.start + (uint32_t)j, distance);
                 }
             }
@@ -142,12 +166,12 @@ void * BusyWork(void *t)
     else
     {
         // for now any other option means use the N^2 algorithm
-         /* Generate intra bucket edges in bucket_a */
+        /* Generate intra bucket edges in bucket_a */
         
-        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
+        for (bucket_a = thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
-
+            
             bucket_A = buckets[bucket_a];
             
             for (i = 0; i < bucket_A.count; i++)
@@ -156,18 +180,20 @@ void * BusyWork(void *t)
                 {
                     x_diff = bucket_A.x[i] - bucket_A.x[j];
                     y_diff = bucket_A.y[i] - bucket_A.y[j];
-                    distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                     
-                    if (GetUniform(thread_data->thread_id) < q * options->distFunction(options->s1, options->s2, distance))
-                        AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t)i,
-                                        bucket_A.start + (uint32_t) j, distance);
+                    distance = dist(x_diff, y_diff);
+                    
+                    if (GetUniform(thread_id) < q * prob(s1, s2, distance))
+                        AddEdgeToBuffer(edges, &edge_buffer,
+                                        bucket_A.start + (uint32_t)i,
+                                        bucket_A.start + (uint32_t)j, distance);
                 }
             }
         }
         
-            
+        
         // Generate inter bucket edges between bucket_a and bucket_b
-        for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
+        for (bucket_a = thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
             bucket_A = buckets[bucket_a];
@@ -182,11 +208,14 @@ void * BusyWork(void *t)
                         
                         x_diff = bucket_A.x[i] - bucket_B.x[j];
                         y_diff = bucket_A.y[i] - bucket_B.y[j];
-                        distance = sqrt(x_diff * x_diff + y_diff * y_diff);
                         
-                        if (GetUniform(thread_data->thread_id) < q * options->distFunction(options->s1, options->s2, distance))
-                            AddEdgeToBuffer(edges, &edge_buffer, bucket_A.start + (uint32_t) i,
-                                            bucket_B.start + (uint32_t)j, distance);
+                        distance = dist(x_diff, y_diff);
+                        
+                        if (GetUniform(thread_id) < q * prob(s1, s2, distance))
+                            AddEdgeToBuffer(edges, &edge_buffer,
+                                            bucket_A.start + (uint32_t) i,
+                                            bucket_B.start + (uint32_t)j,
+                                            distance);
                     }
                 }
             }
@@ -229,8 +258,10 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
         for(i = 0; i < g->Mx; i++)
         {
             
-            distance = sqrt(t[i] * t[i] + t[j] * t[j]);
-            Q[i + g->Mx * j] = options->distFunction(options->s1, options->s2, distance);
+            // distance = sqrt(t[i] * t[i] + t[j] * t[j]);
+            options->distance(t[i], t[j]);
+            Q[i + g->Mx * j] =
+            options->probGivenDistance(options->s1, options->s2, distance);
         }
     }
     
@@ -240,10 +271,13 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
 
 
 
+//------------------------------------------------------------------------------
+//  ENTRYPOINT
+//
+//------------------------------------------------------------------------------
 
-
-
-int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* geometry)
+int GenSERN(NodeList* nodes, EdgeList* edges,
+            Options* options, GeometryStruct* geometry)
 {
     pthread_t *threads;
     pthread_attr_t attr;
@@ -255,18 +289,16 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     BucketStruct *buckets;
     double *Q;
     
-    // fprintf(stdout, " s = %.8f, q = %.8f, N = %d, M = %d \n", options->s, options->q, options->N, options->M);
-    
     // start up the random number generator
     AllocRandom(options->seedval, options->ThreadCount);
     
     Q = CreateQ(geometry, options);
     
-//------------------------------------------------------------------------------
-//  NODE GENERATION
-//
-//------------------------------------------------------------------------------
-  
+    //--------------------------------------------------------------------------
+    //  NODE GENERATION
+    //
+    //--------------------------------------------------------------------------
+    
     // creates bucket structures with pre-initialised node counts
     // and their offsets into the node list.
     buckets = GenerateBuckets(options, geometry, nodes);
@@ -299,7 +331,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     for(t=0; t < options->ThreadCount; t++)
     {
         
-        rc = pthread_create(&threads[t], &attr, (void *) &GenerateNodes,(void *) &thread_data[t]);
+        rc = pthread_create(&threads[t], &attr,
+                            (void *) &GenerateNodes,(void *) &thread_data[t]);
         if (rc)
         {
             // TODO: some error handling here
@@ -321,8 +354,10 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     }
     pthread_attr_destroy(&attr);
     
-//-----------------------------------------------------------------------------
-//  EDGE GENERATION
+    //--------------------------------------------------------------------------
+    //  EDGE GENERATION
+    //
+    //--------------------------------------------------------------------------
     
     /* Initialize and set thread detached attribute */
     pthread_attr_init(&attr);
@@ -335,7 +370,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     {
         
         
-        rc = pthread_create(&threads[t], &attr, BusyWork,(void *) &thread_data[t]);
+        rc = pthread_create(&threads[t],
+                            &attr, BusyWork,(void *) &thread_data[t]);
         if (rc)
         {
             // TODO: some error handling here
@@ -364,7 +400,7 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
         edges->component = caller_calloc(options->N, sizeof(uint32_t));
         component_count = MarkConnectedComponents(options->N, edges);
     }
-   
+    
     // if labeling of connected components is enabled then
     // we will return the labels of the components as they where
     // before we added links to connect them up as overwise use of this
@@ -393,8 +429,6 @@ int GenSERN(NodeList* nodes, EdgeList* edges, Options* options, GeometryStruct* 
     closeEdgeList();
     FreeRandom();
     
-    // fprintf(stdout, " N = %d, M = %d, edges = %d \n", options->N, options->M, edges->count);  
-
     return 0;
 }
 

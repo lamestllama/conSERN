@@ -42,7 +42,7 @@ extern double maxentropy(double s, double unused, double d);
 extern double clipped_waxman2(double s, double h, double d);
 
 
-static ProbabilityFunction  distfunc[] =
+static ProbabilityFunction  probabilityFunctions[] =
     {   waxman,
         clipped_waxman,
         constant,

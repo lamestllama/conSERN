@@ -446,9 +446,9 @@ uint32_t ellipseInside(const GeometryStruct *g, double x, double y)
 // number of buckets in dimension of the region with the largest
 // distance from min to max and P a pointer to a polygon defining
 // the region and initialises a GeometryStruct .
-GeometryStruct *geometryGenerate(Options* options,
+GeometryStruct *geometryGenerate(const Options* options,
                                  GeometryType type,
-                                 PolygonStruct *p)
+                                 const PolygonStruct *p)
 {
     uint32_t i;
     GeometryStruct *g;

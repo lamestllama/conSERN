@@ -17,18 +17,32 @@
 (sizeof (struct {int not_an_array:((void*)&(arr) == &(arr)[0]);}) * 0 \
 + sizeof (arr) / sizeof (*(arr)))
 
-#define DISTANCE_FUN_rhs    0
+#define PROBABILITY_FUN_rhs 0
 #define S_rhs               1
 #define Q_rhs               2
 #define N_rhs               3
-#define M_rhs               4
-#define THREADS_rhs         5
-#define BUFFER_SIZE_rhs     6
-#define ALGORITH_rhs        7
-#define REGION_SHAPE_rhs    8
-#define REGION_GEOMETRY_rhs 9
-#define CONNECTED_rhs       10
-#define SEED_rhs            11
+
+#define DISTANCE_FUN_rhs    4
+#define REGION_SHAPE_rhs    5
+#define REGION_GEOMETRY_rhs 6
+
+
+// we should have defaults for all these except seed
+#define FIRST_DEFAULT       7
+#define CONNECTED_rhs       7
+#define M_rhs               8
+#define THREADS_rhs         9
+#define ALGORITHM_rhs       10
+#define BUFFER_SIZE_rhs     11
+#define SEED_rhs            12
+
+
+#define CONNECTED_default   0
+#define M_default           1
+#define THREADS_default     1
+#define ALGORITHM__default  0
+#define BUFFER_SIZE_default 10000
+
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -45,36 +59,41 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     VectorStruct *vector;
     int i;
     int arg;
+                  // 0   1  2  3   4   5   6   7   8   9  10  11  12
+    int nonZero[] = {0,  0, 1, 1,  0 , 0,  0,  0,  1,  1,  0,  1, 0};
+    int dimM[]    = {1,  1, 1, 1,  1 , 1,  2,  1,  1,  1,  1,  1, 1};
+    int dimN[]    = {1, -1, 1, 1,  1 , 1, -2,  1,  1,  1,  1,  1, 1};
+    
 
-    int nonZero[] = {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0};
-    int dimM[]    = {1,  1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1};
-    int dimN[]    = {1, -1, 1, 1, 1, 1, 1, 1, 1, -2, 1, 1};
+
     
-    
-    char *ar[] = { "distance function", "s", "q", "N", "M",
-                    "number of threads", "buffer size",
-                    "algorithm", "region shape", "region geometry",
-                    "connected graph", "seed", NULL};
+    char *ar[] = { "distance function", "s", "q", "N",
+                   "metric", "region shape", "region geometry",
+                    "connected graph", "M", "number of threads",
+                    "algorithm",  "buffer size","seed", NULL};
     char **c = ar;
 
     
     
     /* Check for proper number of input and output arguments. */
-    if ((nrhs < 10 ) || (nrhs > 12))
+    if ((nrhs < FIRST_DEFAULT ) || (nrhs > NUM_ELEMS(dimM)))
         mexErrMsgTxt("Incorrect number of input arguments: "
-                     "[x,y,n_edges,edge_i,edge_j,edge_weights, "
-                     "node_components] = conSERN( Distancefunction, "
-                     "s, q, N, M, #Threads, "
-                     "BufferSize , algorithm, Distancefunction, shape, "
-                     " geometry,[connected][, seed])");
+                     "[x, y, n_edges, edge_i, edge_j, edge_weights, "
+                     "node_components] = conSERN( "
+                      "distance function, s, q, N, "
+                      "metric, region_shape, region_geometry "
+                      "[, connected_graph][, M][, number_threads]"
+                      "[, algorithm ][, buffer_size][, seed])");
     
     if (nlhs > 7)
         mexErrMsgTxt("Too many output arguments: "
-                     "[x,y,n_edges,edge_i,edge_j,edge_weights, "
-                     "node_components] = conSERN( Distancefunction, "
-                     "s, q, N, M, #Threads, "
-                     "BufferSize , algorithm, Distancefunction, shape, "
-                     " geometry,[connected][, seed])");
+                     "[x, y, n_edges, edge_i, edge_j, edge_weights, "
+                     "node_components] = conSERN( "
+                     "distance function, s, q, N, "
+                     "metric, region_shape, region_geometry "
+                     "[, connected_graph][, M][, number_threads]"
+                     "[, algorithm ][, buffer_size][, seed])");
+
   
 
     // check arguments have the correct dimension and
@@ -158,25 +177,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* only allocate space for node component identifiers if required */
     if(nlhs == 7) options.components_enabled = 1;
     
-    /* Get the input arguments */
-    options.distanceFunction =  (uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs]);
     
-    if (options.distanceFunction >= NUM_ELEMS(distfunc))
+    /* which function pointer to use for calculating probabilities */
+    if ((uint32_t)mxGetScalar(prhs[PROBABILITY_FUN_rhs]) >=
+        NUM_ELEMS(probabilityFunctions))
     {
-        mexErrMsgTxt("unimplemented distance function selected");
+        mexErrMsgTxt("unimplemented probability function selected");
     }
     
-    /* probability (i,j) connected various functions */
-    options.distFunction = distfunc[options.distanceFunction];
+    options.probGivenDistance =
+        probabilityFunctions[(uint32_t)mxGetScalar(prhs[PROBABILITY_FUN_rhs])];
     
+    
+    // there is a possibility that we have more than one shape parameter */
     data = mxDuplicateArray(prhs[S_rhs]);
     
-   // we already checked this
-    
+   // if we only have one use it
     if (mxGetN(data) == 1)
         options.s1 = mxGetScalar(prhs[S_rhs]);
-    else // we have two S parameters
+    else // we have more than one
     {
+        // two is ok
         if (mxGetN(data) == 2)
         {
             s = (double *) mxGetData(data);
@@ -185,42 +206,63 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
         else
         {
+            // but any other number is no good
             mexErrMsgTxt("Only two values for s allowed");
         }
         
     }
    
+    /* the thinning parameter */
     options.q = mxGetScalar(prhs[Q_rhs]);
     
     /* number of nodes in the  graph */
     options.N = (uint32_t) mxGetScalar(prhs[N_rhs]);
     
-    /* dimension of array of buckets */
-    options.M = (uint32_t) mxGetScalar(prhs[M_rhs]);
     
-    /* number of threads to use */
-    options.ThreadCount = (uint32_t) mxGetScalar(prhs[THREADS_rhs]);
+    /* which function pointer to use for calculating distances */
+    if ((uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs]) >=
+        NUM_ELEMS(distanceFunctions))
+    {
+        mexErrMsgTxt("unimplemented metric selected");
+    }
     
-    /* number of edges in buffer for each thread */
-    options.BufferSize = (uint32_t) mxGetScalar(prhs[BUFFER_SIZE_rhs]);
+    /* distance given a diatace in x and one in y */
+    options.distance =
+        distanceFunctions[(uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs])];
     
-    /* fast algorithm = 0 N^2 algorithm = 1 so default is fast */
-    options.algorithm =  (uint32_t) mxGetScalar(prhs[ALGORITH_rhs]);
-
-   
-
+    
+    
+    
+    
     
     /* default is to leave the graph disconnected */
-    options.connected =
-        (nrhs >= 10) ? (uint32_t) mxGetScalar(prhs[CONNECTED_rhs]) : 0;
+    options.connected = (nrhs > CONNECTED_rhs) ?
+            (uint32_t) mxGetScalar(prhs[CONNECTED_rhs]) : CONNECTED_default ;
+    
+    /* dimension of array of buckets */
+    options.M = (nrhs > M_rhs) ?
+            (uint32_t) mxGetScalar(prhs[M_rhs]) : M_default;
+    
+    /* number of threads to use */
+    options.ThreadCount = (nrhs > THREADS_rhs) ?
+            (uint32_t) mxGetScalar(prhs[THREADS_rhs]) : THREADS_default;
+    
+    /* fast algorithm = 0 N^2 algorithm = 1 so default is fast */
+    options.algorithm = (nrhs > ALGORITHM_rhs) ?
+            (uint32_t) mxGetScalar(prhs[ALGORITHM_rhs]) : ALGORITHM__default;
+    
+    /* number of edges in buffer for each thread */
+    options.BufferSize = (nrhs > BUFFER_SIZE_rhs)  ?
+            (uint32_t) mxGetScalar(prhs[BUFFER_SIZE_rhs]) : BUFFER_SIZE_default;
     
     /* initialize random number generator */
-    options.seedval = (nrhs == 12) ? (uint32_t) mxGetScalar(prhs[SEED_rhs]) :
-    (uint32_t) time(0);
+    options.seedval = (nrhs > SEED_rhs) ?
+            (uint32_t) mxGetScalar(prhs[SEED_rhs]) : (uint32_t) time(0);
     
-
     
-    /* handle the shape and the geometry*/
+    
+    /* we can only handle the shape and the geometry once */
+    /*  we have the options particularly M                */
     data = mxDuplicateArray(prhs[REGION_GEOMETRY_rhs]);
     vector  = (VectorStruct *) mxGetData(data);
     assert(mxGetM(data) == 2); // we already checked this
@@ -234,6 +276,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                 mxGetScalar(prhs[REGION_SHAPE_rhs]),
                                 polygon);
 
+    
     
     /* create output matrices */
     node_array_sz[0] = options.N;

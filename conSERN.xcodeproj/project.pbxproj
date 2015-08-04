@@ -212,7 +212,7 @@
 		0749137E1B6E4FDE00B7C498 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
 				GCC_UNROLL_LOOPS = YES;
 				LLVM_LTO = NO;
@@ -223,7 +223,7 @@
 		0749137F1B6E4FDE00B7C498 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = MATLAB;
 				GCC_UNROLL_LOOPS = YES;
 				LLVM_LTO = NO;

@@ -81,9 +81,9 @@ void SetBucketSizes(const Options* options, const GeometryStruct* g, BucketStruc
 
 BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, NodeList *nodes);
 
-GeometryStruct *geometryGenerate(Options* options,
+GeometryStruct *geometryGenerate(const Options* options,
                                  GeometryType type,
-                                 PolygonStruct *p);
+                                 const PolygonStruct *p);
 
 void polygonAppend(PolygonStruct *p, const VectorStruct *v);
 
