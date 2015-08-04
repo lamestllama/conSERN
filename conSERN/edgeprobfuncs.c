@@ -9,7 +9,10 @@
 
 #include "edgeprobfuncs.h"
 
-
+#ifndef max
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 
 
 double waxman(double s, double unused, double d)
@@ -47,10 +50,15 @@ double exponential(double L, double unused, double d)
     return exp(-d / (L - d));
 }
 
-double maxentropy(double s, double unused, double d)
+double maxentropy(double s, double q2, double d)
 {
    // to do test this against a version with a
    // temporary variable for speed
-    return exp(-s * d)/ (1 + exp(-s * d));
+    return (q2 * exp(-s * d))/ (1 + q2 * exp(-s * d));
+}
+
+double clipped_waxman2(double s, double h, double d)
+{
+    return  min(exp(-s * d),h);
 }
 

@@ -39,6 +39,9 @@ extern double exponential(double L, double unused, double d);
 extern double maxentropy(double s, double unused, double d);
 
 
+extern double clipped_waxman2(double s, double h, double d);
+
+
 static ProbabilityFunction  distfunc[] =
     {   waxman,
         clipped_waxman,
@@ -47,7 +50,8 @@ static ProbabilityFunction  distfunc[] =
         powerlaw,
         cauchy,
         exponential,
-        maxentropy
+        maxentropy,
+        clipped_waxman2
     };
 
 

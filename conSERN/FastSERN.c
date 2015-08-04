@@ -70,9 +70,7 @@ void * BusyWork(void *t)
     
         /* Generate intra bucket edges in bucket_a */
         lambda = -log2(1 - q);
-        	
-
-        
+        	    
         for (bucket_a = thread_data->thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {

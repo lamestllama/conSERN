@@ -16,6 +16,7 @@
 		074913A11B6F24F000B7C498 /* nodegen.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749139F1B6F24F000B7C498 /* nodegen.c */; };
 		0762553F1B6FB0D70039A31B /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = 0762553E1B6FB0D70039A31B /* test.m */; };
 		076255421B6FC62F0039A31B /* edgeprobfuncs.c in Sources */ = {isa = PBXBuildFile; fileRef = 076255401B6FC62F0039A31B /* edgeprobfuncs.c */; };
+		076255451B703CF30039A31B /* metrics.c in Sources */ = {isa = PBXBuildFile; fileRef = 076255431B703CF30039A31B /* metrics.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,8 @@
 		0762553E1B6FB0D70039A31B /* test.m */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; path = test.m; sourceTree = "<group>"; };
 		076255401B6FC62F0039A31B /* edgeprobfuncs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = edgeprobfuncs.c; sourceTree = "<group>"; };
 		076255411B6FC62F0039A31B /* edgeprobfuncs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = edgeprobfuncs.h; sourceTree = "<group>"; };
+		076255431B703CF30039A31B /* metrics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = metrics.c; sourceTree = "<group>"; };
+		076255441B703CF30039A31B /* metrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metrics.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -69,6 +72,8 @@
 				074913781B6E4FDE00B7C498 /* conSERN.c */,
 				074913801B6E514000B7C498 /* FastSERN.c */,
 				076255401B6FC62F0039A31B /* edgeprobfuncs.c */,
+				076255431B703CF30039A31B /* metrics.c */,
+				076255441B703CF30039A31B /* metrics.h */,
 				076255411B6FC62F0039A31B /* edgeprobfuncs.h */,
 				074913A21B6F27FB00B7C498 /* threads.h */,
 				0749138F1B6F017C00B7C498 /* connected.c */,
@@ -142,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				074913791B6E4FDE00B7C498 /* conSERN.c in Sources */,
+				076255451B703CF30039A31B /* metrics.c in Sources */,
 				0762553F1B6FB0D70039A31B /* test.m in Sources */,
 				074913911B6F017C00B7C498 /* connected.c in Sources */,
 				074913A11B6F24F000B7C498 /* nodegen.c in Sources */,
