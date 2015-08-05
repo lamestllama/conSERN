@@ -163,8 +163,7 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
         if (signs[i] < 0 && i != iLargest)
         {
            componentRoots[c - 1] = i;
-           roots[i] = c;
-            ++c;
+           roots[i] = c++;
         }
     }
     c--;
