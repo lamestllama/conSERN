@@ -13,19 +13,15 @@
 #include <math.h>
 #include <inttypes.h>
 
+#define LOCALE 5
 
 
-// Union Set algorithm
-// Returns the root node of x
-// TODO convert this to use an array of bytes
-// to store the negative sign and create the
-// rest in place in the structure to be returned.
 
-int64_t find(int64_t x, int64_t *roots)
+uint64_t find(uint32_t x, uint32_t *roots, int8_t *signs)
 {
     // find the root
     int64_t root = x;
-    while (roots[root] >= 0) root = roots[root];
+    while (signs[root] >= 0) root = roots[root];
     
     // compress paths
     while (x != root)
@@ -39,159 +35,159 @@ int64_t find(int64_t x, int64_t *roots)
 
 // combines the sets that contain x and y
 // false if x and y already in the same set
-bool merge(int64_t x, int64_t y, int64_t *roots)
+bool merge(uint32_t x, uint32_t y, uint32_t *roots, int8_t *signs)
 {
-    int64_t tmp;
-    x = find(x, roots);
-    y = find(y, roots);
+    uint32_t tmp;
+    x = find(x, roots, signs);
+    y = find(y, roots, signs);
     if (x == y) return false;
-    // roots[x] is the negated size of the set x is in
+    // roots[x] is the  size of the set x is in
     // make sure x is the larger set
-    if (roots[x] > roots[y]) {tmp = x; x = y; y = tmp;}
+    if (roots[x] < roots[y]) {tmp = x; x = y; y = tmp;}
     roots[x] += roots[y];
     // move the y tree under x
     roots[y] =  x;
+    signs[y] =  1;
     return true ;
 }
 
 
+// Union Set algorithm to find the connected components and then
+// a heuristic to link the components together in reasonable time
 
 int Components(Options *options,  NodeList *nodes, EdgeList* edges)
 {
-   
-    int64_t *roots;
-    int64_t i;
+    
+    uint32_t *roots;
+    int8_t *signs;
+    
+    int64_t i, j, d;
     uint32_t c;
     uint32_t N;
+    uint32_t sLargest;
+    uint32_t iLargest;
+    double distance;
+    EdgeList edge_buffer;
     
+    // shorthand
     N = options->N;
     
-    roots = (int64_t *) calloc(N, sizeof(int64_t));
+    // if we want to return the connected components
+    // to the caller then use memory allocated with
+    // the callers memory allocation routines
+    if (options->connected)
+    {
+        nodes->component = options->calloc(options->N, sizeof(uint32_t));
+        roots = nodes->component;
+    }
+    else  // otherwise use the stdlib allocation routines
+        roots = calloc(options->N, sizeof(uint32_t));
     
-    for(i = 0; i < N; i++) roots[i] = -1;
+    // use this to indicate the roots of connected components
+    signs = (int8_t *) calloc(N, sizeof(int8_t));
     
-    for(i = 0; i < edges->count; i++)
-        merge(edges->from[i] - 1, edges->to[i] - 1, roots);
-    
-    for(i = 0; i < N; i++) find(i, roots);
-   
-    for (i = 0, c = 1; i < N; i++)
-        if (roots[i] < 0)
-            nodes->component[i] = c++;
-    
-    for (i = 0; i < N; i++)
-        if (roots[i] > 0)
-            nodes->component[i] = nodes->component[roots[i]];
-    
-    free(roots);
-    return c - 1;
-}
-
-
-
-
-void MakeConnected(Options *options, NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
-                   float* x, float* y, uint32_t component_count)
-{
-    
-    uint64_t i, j;
-    int32_t N;
-    uint32_t *component_sizes;
-    uint32_t *massive_component;
-    uint32_t massive_size;
-    uint32_t massive;
-    double  distance = 0;
-    EdgeList edge_buffer = {NULL, NULL, NULL, 0, 0, 0, 0};
-    
-    
-    N = options->N;
-    
-    // TODO memory allocation error handling
-    // components are numbered from 1
-    // but we store there sizes in an array
-    // indexed from zero
-    component_sizes = calloc(component_count, sizeof(uint32_t));
-    
-    // the largest component is initially
-    // set to the first component
-    massive = 0;
-    // for each node
+    // set all nodes to be their own root
     for(i = 0; i < N; i++)
     {
-        // increment the component size
-        // of the component that this
-        // node belongs too
-        component_sizes[nodes->component[i]-1] += 1;
-        // update which component is the largest
-        if (component_sizes[nodes->component[i]-1] > component_sizes[massive])
-            massive = nodes->component[i]-1;
+        roots[i] = 1;
+        signs[i] = -1;  // -1 inicates this is a root
+    }
+    
+    // merge into components
+    for(i = 0; i < edges->count; i++)
+        merge(edges->from[i] - 1, edges->to[i] - 1, roots, signs);
+    
+    
+    // compress the paths and find the largest component
+    sLargest = 0;
+    for(i = 0; i < N; i++)
+    {
+        find(i, roots, signs);
+        if (signs[i] < 0 && roots[i] > sLargest)
+        {
+            sLargest = roots[i];
+            iLargest = i;
+        }
+    
+    }
+
+    // for convenience we make the largest
+    // component have the label 1 the rest
+    // are labeled arbitrarily
+    // first we label the roots
+    roots[iLargest] = 1;
+    for (i = 0, c = 2; i < N; i++)
+    {
+        if (i == iLargest) continue;
+        if (signs[i] < 0) roots[i] = c++;
+    }
+    c--;
+    
+    
+    // now labels the rest of the nodes
+    // using the labels of their roots
+    for (i = 0; i < N; i++)
+        if (signs[i] > 0)
+            roots[i] = roots[roots[i]];
+    
+    // only components required
+    if (!options->connected)
+    {
+        free(signs);
+        return c;
+    }
+    
+    // we will only add #components - 1 edges to connect
+    // the graph now we can allocate the right sized buffer
+    // prepare for allocation
+    AllocateEdgeBuffer(&edge_buffer, c, edges->weights_enabled);
+    
+    // this is dirty and uses the fact that nodes are numbered
+    // close together so we will mainly be adding short links
+    // in order to make the graph a connected graph the more
+    // buckets we have the shorter the links will be so not ideal
+    for (i = 0; i < N; i++)
+    {
+        // if we find the root of a component that is not the largest one
+        if (signs[i] < 0 &&  i != iLargest)
+        {
+            d = (i < iLargest) ? 1 : -1;
+            
+            // look at the next few in the direction of the largest
+            // components root to see if a close node that belongs
+            // to the largest component can be connected too otherwise
+            // connect too the root of the largest component
+            for (j = i + d; abs((int)(j - i)) <= LOCALE; j = j + d)
+                if (roots[j] == 1)
+                    break;
+                    
+            j = (roots[j] == 1) ? j : iLargest;
+            
+            // use the correct distance function
+            distance = options->distance(nodes->x[i]-nodes->x[j],
+                                         nodes->y[i]-nodes->y[j]);
+            
+            AddEdgeToBuffer(options, edges, &edge_buffer,
+                            (uint32_t)i, (uint32_t)j, /* distance */0);
+        }
         
     }
     
+    if (!options->connected) free(roots);
     
-    // we know what component is the largest one and
-    // how much space we need to accomodate it
-    // TODO memory allocation error handling
-    massive_component = calloc(component_sizes[massive], sizeof(uint32_t));
-    
-    // store the nodes that make up the largest component
-    for (i = j = 0; i < N; i++)
-    {
-        if (nodes->component[i]-1 == massive)
-        {
-            massive_component[j] = (uint32_t)i;
-            j++;
-            
-        }continue;
-    }
-    massive_size = component_sizes[massive];
-    
-    // almost randomly choose the node to connect for each
-    // component not in the largest component Note: slight bias to
-    // smaller values because of the use of mod TODO fix randomness
-    
-    for(i = 0; i < component_count; i++)
-    {
-        component_sizes[i] = (rand() % component_sizes[i]) + 1;
-    }
-    
-    // ensure nodes in largest component are ignored;
-    component_sizes[massive] = 0;
-    
-    AllocateEdgeBuffer(&edge_buffer, BufferSize, edges->weights_enabled);
-    
-    // we should only need to add component - 1 more edges
-    // for every node
-    for(i = j= 0; i < N; i++)
-    {
-        switch(component_sizes[nodes->component[i] - 1])
-        {
-                // the component that this node part of
-                // has already been connected to the largest component
-            case 0: break;
-                
-            case 1:
-                // connect the component that this node is part of
-                // to the largest component by selecting  random
-                // node in the largest component
-                j = rand() % massive_size;
-                if(edges->weights_enabled)
-                {
-                    double xdiff = x[i] - x[massive_component[j]];
-                    double ydiff = y[i] - y[massive_component[j]];
-                    
-                    distance = sqrt((xdiff * xdiff) + (ydiff * ydiff));
-                }
-                AddEdgeToBuffer(options, edges, &edge_buffer, (uint32_t)i, massive_component[j], distance);
-                // case 1 purposely drops through to default processing
-            default: component_sizes[nodes->component[i] - 1] -= 1;
-                
-        }
-    }
-    
-    free(component_sizes);
-    free(massive_component);
-    
-    // flush out our buffer
+    free(signs);
     CopyEdgeList(options, edges, &edge_buffer);
+    
+    free(edge_buffer.from);
+    free(edge_buffer.to);
+    
+    if (edges->weights_enabled)
+        free(edge_buffer.weight);
+
+    return c;
+    
 }
+
+
+
+

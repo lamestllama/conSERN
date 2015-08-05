@@ -42,9 +42,6 @@ void * BusyWork(void *t)
     
     EdgeList edge_buffer;
     
-    // clear the structure used as an edgebuffer
-    memset(&edge_buffer, 0, sizeof(EdgeList));
-    
     thread_data = (ThreadDataStruct *)t;
     
     // store all the frequently used values locally
@@ -410,13 +407,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     {
         // TODO memory allocation error handling
         // we want this memory zeroed hence the use of calloc
-        nodes->component = options->calloc(options->N, sizeof(uint32_t));
         component_count = Components(options, nodes, edges);
     }
-    
-
-
-    
     
     /* cleanup */
     free(buckets);
