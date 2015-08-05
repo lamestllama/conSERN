@@ -33,7 +33,7 @@ typedef struct
     uint32_t *from;
     uint32_t *to;
     float    *weight;
-    uint32_t *component;
+    //uint32_t *component;
     uint32_t weights_enabled;
     uint64_t count;
     uint64_t allocated;

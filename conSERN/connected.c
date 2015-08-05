@@ -7,7 +7,10 @@
 //
 
 #include "connected.h"
-#include "fastSERN.h"
+#include "options.h"
+
+//#include "fastSERN.h"
+
 #include <stdlib.h>
 #include <math.h>
 #include <inttypes.h>
@@ -16,6 +19,10 @@
 
 // Union Set algorithm
 // Returns the root node of x
+// TODO convert this to use an array of bytes
+// to store the negative sign and create the
+// rest in place in the structure to be returned.
+
 int64_t find(int64_t x, int64_t *roots)
 {
     // find the root
@@ -51,12 +58,15 @@ bool merge(int64_t x, int64_t y, int64_t *roots)
 
 
 
-int Components(int32_t N,  EdgeList* edges)
+int Components(Options *options,  NodeList *nodes, EdgeList* edges)
 {
    
     int64_t *roots;
     int64_t i;
     uint32_t c;
+    uint32_t N;
+    
+    N = options->N;
     
     roots = (int64_t *) calloc(N, sizeof(int64_t));
     
@@ -69,11 +79,11 @@ int Components(int32_t N,  EdgeList* edges)
    
     for (i = 0, c = 1; i < N; i++)
         if (roots[i] < 0)
-            edges->component[i] = c++;
+            nodes->component[i] = c++;
     
     for (i = 0; i < N; i++)
         if (roots[i] > 0)
-            edges->component[i] = edges->component[roots[i]];
+            nodes->component[i] = nodes->component[roots[i]];
     
     free(roots);
     return c - 1;
@@ -82,7 +92,7 @@ int Components(int32_t N,  EdgeList* edges)
 
 
 
-void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,
+void MakeConnected(int32_t N,  NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
                    float* x, float* y, uint32_t component_count)
 {
     
@@ -111,10 +121,10 @@ void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,
         // increment the component size
         // of the component that this
         // node belongs too
-        component_sizes[edges->component[i]-1] += 1;
+        component_sizes[nodes->component[i]-1] += 1;
         // update which component is the largest
-        if (component_sizes[edges->component[i]-1] > component_sizes[massive])
-            massive = edges->component[i]-1;
+        if (component_sizes[nodes->component[i]-1] > component_sizes[massive])
+            massive = nodes->component[i]-1;
         
     }
     
@@ -127,7 +137,7 @@ void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,
     // store the nodes that make up the largest component
     for (i = j = 0; i < N; i++)
     {
-        if (edges->component[i]-1 == massive)
+        if (nodes->component[i]-1 == massive)
         {
             massive_component[j] = (uint32_t)i;
             j++;
@@ -154,7 +164,7 @@ void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,
     // for every node
     for(i = j= 0; i < N; i++)
     {
-        switch(component_sizes[edges->component[i] - 1])
+        switch(component_sizes[nodes->component[i] - 1])
         {
                 // the component that this node part of
                 // has already been connected to the largest component
@@ -174,7 +184,7 @@ void MakeConnected(int32_t N,  EdgeList *edges, uint32_t BufferSize,
                 }
                 AddEdgeToBuffer(edges, &edge_buffer, (uint32_t)i, massive_component[j], distance);
                 // case 1 purposely drops through to default processing
-            default: component_sizes[edges->component[i] - 1] -= 1;
+            default: component_sizes[nodes->component[i] - 1] -= 1;
                 
         }
     }

@@ -318,7 +318,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         plhs[6] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);
         mxSetM(plhs[6], options.N);
         mxSetN(plhs[6], 1);
-        mxSetData(plhs[6], edges.component);
+        mxSetData(plhs[6], nodes.component);
     }
     
 }

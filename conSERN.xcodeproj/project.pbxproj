@@ -14,7 +14,6 @@
 		074913911B6F017C00B7C498 /* connected.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749138F1B6F017C00B7C498 /* connected.c */; };
 		074913941B6F026100B7C498 /* edgelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 074913921B6F026100B7C498 /* edgelist.c */; };
 		074913A11B6F24F000B7C498 /* nodegen.c in Sources */ = {isa = PBXBuildFile; fileRef = 0749139F1B6F24F000B7C498 /* nodegen.c */; };
-		0762553F1B6FB0D70039A31B /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = 0762553E1B6FB0D70039A31B /* test.m */; };
 		076255421B6FC62F0039A31B /* edgeprobfuncs.c in Sources */ = {isa = PBXBuildFile; fileRef = 076255401B6FC62F0039A31B /* edgeprobfuncs.c */; };
 		076255451B703CF30039A31B /* metrics.c in Sources */ = {isa = PBXBuildFile; fileRef = 076255431B703CF30039A31B /* metrics.c */; };
 /* End PBXBuildFile section */
@@ -148,7 +147,6 @@
 			files = (
 				074913791B6E4FDE00B7C498 /* conSERN.c in Sources */,
 				076255451B703CF30039A31B /* metrics.c in Sources */,
-				0762553F1B6FB0D70039A31B /* test.m in Sources */,
 				074913911B6F017C00B7C498 /* connected.c in Sources */,
 				074913A11B6F24F000B7C498 /* nodegen.c in Sources */,
 				074913881B6EEC4D00B7C498 /* binomial.c in Sources */,

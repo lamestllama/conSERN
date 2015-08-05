@@ -15,6 +15,7 @@ typedef struct
 {
     float *x;
     float *y;
+    uint32_t *component;
 } NodeList;
 
 typedef struct

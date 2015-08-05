@@ -95,6 +95,7 @@ void * BusyWork(void *t)
     {
         
         /* Generate intra bucket edges in bucket_a */
+        // this is the fast algorithm
         lambda = -log2(1 - q);
         
         for (bucket_a = thread_id; bucket_a < Mx * My; bucket_a += thread_count)
@@ -393,12 +394,12 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         
     }
     
-    if(options->components_enabled)
+    if (options->components_enabled || options->connected)
     {
         // TODO memory allocation error handling
         // we want this memory zeroed hence the use of calloc
-        edges->component = caller_calloc(options->N, sizeof(uint32_t));
-        component_count = Components(options->N, edges);
+        nodes->component = caller_calloc(options->N, sizeof(uint32_t));
+        component_count = Components(options, nodes, edges);
     }
     
     // if labeling of connected components is enabled then
@@ -406,19 +407,19 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     // before we added links to connect them up as overwise use of this
     // option while ensuring the graph is connected would
     // be redundant
-    if(options->connected)
-    {
-        
-        // if the labeling of connected components is not enabled
-        // then label them so that we can work out what to connnect
-        if (!options->components_enabled)
-        {
-            edges->component = caller_calloc(options->N, sizeof(uint32_t));
-            component_count = Components(options->N, edges);
-        }
-        MakeConnected(options->N, edges, options->BufferSize,
-                      nodes->x, nodes->y, component_count);
-    }
+//    if(options->connected)
+//    {
+//        
+//        // if the labeling of connected components is not enabled
+//        // then label them so that we can work out what to connnect
+//        if (!options->components_enabled)
+//        {
+//            nodes->component = caller_calloc(options->N, sizeof(uint32_t));
+//            component_count = Components(options, nodes, edges);
+//        }
+//        MakeConnected(options->N, nodes, edges, options->BufferSize,
+//                      nodes->x, nodes->y, component_count);
+//    }
     
     
     /* cleanup */

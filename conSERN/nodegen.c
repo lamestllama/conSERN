@@ -729,6 +729,13 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     
                 case ellipse:
                     
+                    if (g->Mx * g->My == 1) // single bucket case
+                    {
+                        bucket->p = 1;
+                        bucket->status = partial;
+                        break;
+                        
+                    }
                     clippingPoly.vertices[0].x = i * g->bucketSize + g->origin.x;
                     clippingPoly.vertices[0].y = j * g->bucketSize + g->origin.y;
                     clippingPoly.vertices[1].x = clippingPoly.vertices[0].x;
@@ -785,6 +792,13 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     break;
                     
                 case polygon:
+                    if (g->Mx * g->My == 1) // single bucket case
+                    {
+                        bucket->p = 1;
+                        bucket->status = partial;
+                        break;
+                        
+                    }
                     
                     clippingPoly.vertices[0].x = i * g->bucketSize + g->origin.x;
                     clippingPoly.vertices[0].y = j * g->bucketSize + g->origin.y;

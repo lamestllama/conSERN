@@ -33,16 +33,10 @@ uint64_t AllocateEdgeBuffer(EdgeList *l, uint32_t buffer_size, uint32_t enable_w
 
 void openEdgeList(EdgeList *l, Options* options)
 {
-    
-    l->from = NULL;
-    l->to = NULL;
-    l->weight = NULL;
-    l->component = NULL;
+    memset(l, 0, sizeof(EdgeList));
+   
     l->weights_enabled = options->weights_enabled;
-    l->count = 0;
-    l->allocated = 0;
-    l->growth = 0;
-    
+   
     pthread_mutex_init(&mutex_realloc, NULL);
     memccpyThreadCount = 0;
     lock =0;
