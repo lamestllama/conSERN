@@ -859,7 +859,7 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
         }
     }
     
-    SetBucketSizes (options, g, buckets);
+    SetBucketSizes(options, g, buckets);
     
     /* Set each bucket to point at the appropriate part of the node arrays */
     offset = 0;

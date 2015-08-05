@@ -48,7 +48,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     
     mxArray *data;
-    mwSize node_array_sz[2];
     double *pEdgeCount;
     double *s;
     NodeList nodes;
@@ -236,10 +235,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         distanceFunctions[(uint32_t) mxGetScalar(prhs[DISTANCE_FUN_rhs])];
     
     
-    
-    
-    
-    
     /* default is to leave the graph disconnected */
     options.connected = (nrhs > CONNECTED_rhs) ?
             (uint32_t) mxGetScalar(prhs[CONNECTED_rhs]) : CONNECTED_default ;
@@ -265,7 +260,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             (uint32_t) mxGetScalar(prhs[SEED_rhs]) : (uint32_t) time(0);
     
     
-    
     /* we can only handle the shape and the geometry once */
     /*  we have the options particularly M                */
     data = mxDuplicateArray(prhs[REGION_GEOMETRY_rhs]);
@@ -281,31 +275,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                 mxGetScalar(prhs[REGION_SHAPE_rhs]),
                                 polygon);
 
-    
-    
-    /* create output matrices */
-    node_array_sz[0] = options.N;
-    node_array_sz[1] = 1;
-    plhs[0] = mxCreateNumericArray(1, node_array_sz, mxSINGLE_CLASS, mxREAL);
-    nodes.x = (float *) mxGetPr(plhs[0]);
-    plhs[1] = mxCreateNumericArray(1, node_array_sz, mxSINGLE_CLASS, mxREAL);
-    nodes.y = (float *) mxGetPr(plhs[1]);
-    plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
-    pEdgeCount = mxGetPr(plhs[2]);
-    
     /* create the graph */
     // TODO function to set initial size close to that needed
     edges.growth = 4 * options.N;
     
     GenSERN(&nodes, &edges, &options, geometry);
     polygonFree(polygon);
+    
+     /* create output arrays */
+    plhs[0] = mxCreateNumericArray(0, 0, mxSINGLE_CLASS, mxREAL);
+    mxSetM(plhs[0], options.N);
+    mxSetN(plhs[0], 1);
+    mxSetData(plhs[0], nodes.x);
+    
+    plhs[1] = mxCreateNumericArray(0, 0, mxSINGLE_CLASS, mxREAL);
+    mxSetM(plhs[1], options.N);
+    mxSetN(plhs[1], 1);
+    mxSetData(plhs[1], nodes.y);
+    
+    plhs[2] = mxCreateDoubleMatrix(1, 1, mxREAL);
+    pEdgeCount = mxGetPr(plhs[2]);
     pEdgeCount[0] = edges.count;
     
     plhs[3] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);
-    plhs[4] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);
     mxSetM(plhs[3], edges.count);
     mxSetN(plhs[3], 1);
     mxSetData(plhs[3], edges.from);
+    
+    plhs[4] = mxCreateNumericArray(0, 0, mxUINT32_CLASS, mxREAL);
     mxSetM(plhs[4], edges.count);
     mxSetN(plhs[4], 1);
     mxSetData(plhs[4], edges.to);

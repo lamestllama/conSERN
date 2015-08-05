@@ -14,19 +14,9 @@
 #include "connected.h"
 #include "nodegen.h"
 #include "threads.h"
+#include <assert.h>
 #include <pthread.h>
 
-
-
-
-#ifdef MATLAB
-#include "mex.h"
-#define caller_realloc mxRealloc
-#define caller_calloc mxCalloc
-#else
-#define caller_realloc realloc
-#define caller_calloc  calloc
-#endif
 
 
 void * BusyWork(void *t)
@@ -291,6 +281,13 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     BucketStruct *buckets;
     double *Q;
     
+    
+    // see if we have alternatives for realloc and calloc
+    // if not use the default ones provided by stdlib
+    if (!options->realloc) options->realloc = realloc;
+    if (!options->calloc) options->calloc = calloc;
+    
+    
     // start up the random number generator
     AllocRandom(options->seedval, options->ThreadCount);
     
@@ -301,9 +298,17 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     //
     //--------------------------------------------------------------------------
     
+    
+    // some memory to return to the caller thus allocated with
+    // provided memory allocation function
+    nodes->x = options->calloc(options->N, sizeof(float));
+    nodes->y = options->calloc(options->N, sizeof(float));
+    
+    
     // creates bucket structures with pre-initialised node counts
     // and their offsets into the node list.
     buckets = GenerateBuckets(options, geometry, nodes);
+    
     
     // create an array of thread structures pre-initialised
     // with everything a worker thread needs to create nodes
@@ -395,32 +400,22 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         
     }
     
-    if (options->components_enabled || options->connected)
-    {
-        // TODO memory allocation error handling
-        // we want this memory zeroed hence the use of calloc
-        nodes->component = caller_calloc(options->N, sizeof(uint32_t));
-        component_count = Components(options, nodes, edges);
-    }
-    
     // if labeling of connected components is enabled then
     // we will return the labels of the components as they where
     // before we added links to connect them up as overwise use of this
     // option while ensuring the graph is connected would
     // be redundant
-//    if(options->connected)
-//    {
-//        
-//        // if the labeling of connected components is not enabled
-//        // then label them so that we can work out what to connnect
-//        if (!options->components_enabled)
-//        {
-//            nodes->component = caller_calloc(options->N, sizeof(uint32_t));
-//            component_count = Components(options, nodes, edges);
-//        }
-//        MakeConnected(options->N, nodes, edges, options->BufferSize,
-//                      nodes->x, nodes->y, component_count);
-//    }
+    
+    if (options->components_enabled || options->connected)
+    {
+        // TODO memory allocation error handling
+        // we want this memory zeroed hence the use of calloc
+        nodes->component = options->calloc(options->N, sizeof(uint32_t));
+        component_count = Components(options, nodes, edges);
+    }
+    
+
+
     
     
     /* cleanup */
