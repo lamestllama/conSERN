@@ -59,9 +59,10 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
 {
     
     uint32_t *roots;
+    uint32_t *componentRoots;
     int8_t *signs;
     
-    int64_t i, j, d, e;
+    int64_t i, j, d;
     uint32_t c;
     uint32_t N;
     uint32_t sLargest;
@@ -72,10 +73,10 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     // shorthand
     N = options->N;
     
-    // if we want to return the connected components
+    // if we want to return the  components
     // to the caller then use memory allocated with
     // the callers memory allocation routines
-    if (options->connected)
+    if (options->components_enabled)
     {
         nodes->component = options->calloc(options->N, sizeof(uint32_t));
         roots = nodes->component;
@@ -98,28 +99,73 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
         merge(edges->from[i] - 1, edges->to[i] - 1, roots, signs);
     
     
-    // compress the paths and find the largest component
+    // compress the paths, count the components
+    // and find the largest component
     sLargest = 0;
-    for(i = 0; i < N; i++)
+    for(i = 0, c = 0; i < N; i++)
     {
         find(i, roots, signs);
-        if (signs[i] < 0 && roots[i] > sLargest)
+        if (signs[i] < 0)
         {
-            sLargest = roots[i];
-            iLargest = i;
+            c++;
+            if(roots[i] > sLargest)
+            {
+                sLargest = roots[i];
+                iLargest = i;
+            }
+            
         }
     
     }
-
-    // for convenience we make the largest
-    // component have the label 1 the rest
-    // are labeled arbitrarily
-    // first we label the roots
+    
+    
+    // simple form of assigning component labels can be
+    // used if only the connected components and not a
+    // connected graph are required
+    if (!options->connected)
+    {
+         // give the largest components root label 1
+        roots[iLargest] = 1;
+        for (i = 0, c = 2; i < N; i++)
+        {
+            if (i == iLargest) continue;
+            // label the remaining roots arbitrarly
+            if (signs[i] < 0) roots[i] = c++;
+        }
+        c--;
+        
+        
+        // labels the rest of the nodes using
+        // the labels assigned their roots
+        for (i = 0; i < N; i++)
+            if (signs[i] > 0)
+                roots[i] = roots[roots[i]];
+        
+        
+        free(signs);
+        
+        return c;
+    }
+    
+    
+    // More complex form of assigning component
+    // labels keeps track of the location of
+    // component roots to speed subsequent itteration
+    
+    componentRoots = (uint32_t *) calloc(c, sizeof(uint32_t));
+    
+    // largest component assigned label 1 the
+    // others are labeled arbitrarily labeled
     roots[iLargest] = 1;
+    componentRoots[0] = iLargest;
     for (i = 0, c = 2; i < N; i++)
     {
-        if (i == iLargest) continue;
-        if (signs[i] < 0) roots[i] = c++;
+        if (signs[i] < 0 && i != iLargest)
+        {
+           componentRoots[c - 1] = i;
+           roots[i] = c;
+            ++c;
+        }
     }
     c--;
     
@@ -130,13 +176,6 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
         if (signs[i] > 0)
             roots[i] = roots[roots[i]];
     
-    // only components required
-    if (!options->connected)
-    {
-        free(signs);
-        return c;
-    }
-    
     // we will only add #components - 1 edges to connect
     // the graph now we can allocate the right sized buffer
     // prepare for allocation
@@ -146,42 +185,42 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     // close together so we will mainly be adding short links
     // in order to make the graph a connected graph the more
     // buckets we have the shorter the links will be so not ideal
-    for (i = 0, e = c - 1; i < N && e > 0; i++)
+    for (i = 1; i < c; i++)
     {
-        // if we find the root of a component that is not the largest one
-        if (signs[i] < 0 &&  i != iLargest)
-        {
-            d = (i < iLargest) ? 1 : -1;
-            --e; // keeping track of how many left to do
-            
-            // look at the next few in the direction of the largest
-            // components root to see if a close node that belongs
-            // to the largest component can be connected too otherwise
-            // connect too the root of the largest component
-            for (j = i + d; abs((int)(j - i)) <= LOCALE; j = j + d)
-                if (roots[j] == 1)
-                    break;
-                    
-            j = (roots[j] == 1) ? j : iLargest;
-            
-            // use the correct distance function
-            distance = options->distance(nodes->x[i]-nodes->x[j],
-                                         nodes->y[i]-nodes->y[j]);
-            
-            AddEdgeToBuffer(options, edges, &edge_buffer,
-                            (uint32_t)i, (uint32_t)j, distance );
-        }
         
+        d = (componentRoots[i] < iLargest) ? 1 : -1;
+        
+        // look in  the direction of the largest components root
+        // for a nearby node that belongs to the largest component.
+        for (j = componentRoots[i]  + d;
+             abs((int)(j - componentRoots[i])) <= LOCALE; j = j + d)
+            if (roots[j] == 1) break;
+        
+        // if such a node is found within LOCALE steps connect to
+        // it otherwise connect to the root of the largest component
+        j = (roots[j] == 1) ? j : iLargest;
+        
+        // use the correct distance function
+        distance = options->distance(nodes->x[componentRoots[i]]-nodes->x[j],
+                                     nodes->y[componentRoots[i]]-nodes->y[j]);
+        
+        AddEdgeToBuffer(options, edges, &edge_buffer,
+                        (uint32_t)componentRoots[i], (uint32_t)j, distance);
     }
     
-    if (!options->connected) free(roots);
+    // if we are not returning the components
+    // to the caller then free the roots
+    if (!options->components_enabled) free(roots);
     
+    free(componentRoots);
     free(signs);
+    
     CopyEdgeList(options, edges, &edge_buffer);
     
+    // now we have finished with the edge buffer
+    // TODO write a free edgebuffer function 
     free(edge_buffer.from);
     free(edge_buffer.to);
-    
     if (edges->weights_enabled)
         free(edge_buffer.weight);
 

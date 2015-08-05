@@ -405,8 +405,6 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     
     if (options->components_enabled || options->connected)
     {
-        // TODO memory allocation error handling
-        // we want this memory zeroed hence the use of calloc
         component_count = Components(options, nodes, edges);
     }
     
