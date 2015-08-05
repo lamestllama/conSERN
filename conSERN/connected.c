@@ -61,7 +61,7 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     uint32_t *roots;
     int8_t *signs;
     
-    int64_t i, j, d;
+    int64_t i, j, d, e;
     uint32_t c;
     uint32_t N;
     uint32_t sLargest;
@@ -146,12 +146,13 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     // close together so we will mainly be adding short links
     // in order to make the graph a connected graph the more
     // buckets we have the shorter the links will be so not ideal
-    for (i = 0; i < N; i++)
+    for (i = 0, e = c - 1; i < N && e > 0; i++)
     {
         // if we find the root of a component that is not the largest one
         if (signs[i] < 0 &&  i != iLargest)
         {
             d = (i < iLargest) ? 1 : -1;
+            --e; // keeping track of how many left to do
             
             // look at the next few in the direction of the largest
             // components root to see if a close node that belongs
