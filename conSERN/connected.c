@@ -169,7 +169,7 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
                                          nodes->y[i]-nodes->y[j]);
             
             AddEdgeToBuffer(options, edges, &edge_buffer,
-                            (uint32_t)i, (uint32_t)j, /* distance */0);
+                            (uint32_t)i, (uint32_t)j, distance );
         }
         
     }
