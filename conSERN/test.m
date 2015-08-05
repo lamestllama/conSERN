@@ -44,7 +44,7 @@ Algorithm=0
 Buffersize=5000
 seed=1962
 
-
+A=A1
 [x y n from to] = conSERN(DistanceFunction, s, q, N, Metric, shape, A, connected, M, Threads, Algorithm, Buffersize, seed);
 figure(1)
 hold on

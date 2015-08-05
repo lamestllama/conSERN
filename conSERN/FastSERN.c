@@ -118,7 +118,7 @@ void * BusyWork(void *t)
                 distance = dist(x_diff, y_diff);
                 
                 if (GetUniform(thread_id) < prob(s1, s2, distance))
-                    AddEdgeToBuffer(edges, &edge_buffer,
+                    AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                     bucket_A.start + (uint32_t)i,
                                     bucket_A.start + (uint32_t) j, distance);
                 
@@ -156,7 +156,7 @@ void * BusyWork(void *t)
                     distance = dist(x_diff, y_diff);
                     
                     if (GetUniform(thread_id) * p < prob(s1, s2, distance))
-                        AddEdgeToBuffer(edges, &edge_buffer,
+                        AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
                                         bucket_B.start + (uint32_t)j, distance);
                 }
@@ -185,7 +185,7 @@ void * BusyWork(void *t)
                     distance = dist(x_diff, y_diff);
                     
                     if (GetUniform(thread_id) < q * prob(s1, s2, distance))
-                        AddEdgeToBuffer(edges, &edge_buffer,
+                        AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
                                         bucket_A.start + (uint32_t)j, distance);
                 }
@@ -213,7 +213,8 @@ void * BusyWork(void *t)
                         distance = dist(x_diff, y_diff);
                         
                         if (GetUniform(thread_id) < q * prob(s1, s2, distance))
-                            AddEdgeToBuffer(edges, &edge_buffer,
+                            AddEdgeToBuffer(thread_data->options,
+                                            edges, &edge_buffer,
                                             bucket_A.start + (uint32_t) i,
                                             bucket_B.start + (uint32_t)j,
                                             distance);
@@ -224,7 +225,7 @@ void * BusyWork(void *t)
     }
     
     // flush out our buffer
-    CopyEdgeList(edges, &edge_buffer);
+    CopyEdgeList(thread_data->options, edges, &edge_buffer);
     
     free(edge_buffer.from);
     free(edge_buffer.to);

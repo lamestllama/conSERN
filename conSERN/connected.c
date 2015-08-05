@@ -8,9 +8,7 @@
 
 #include "connected.h"
 #include "options.h"
-
-//#include "fastSERN.h"
-
+#include <stdbool.h>
 #include <stdlib.h>
 #include <math.h>
 #include <inttypes.h>
@@ -92,12 +90,12 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
 
 
 
-void MakeConnected(int32_t N,  NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
+void MakeConnected(Options *options, NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
                    float* x, float* y, uint32_t component_count)
 {
     
     uint64_t i, j;
-    
+    int32_t N;
     uint32_t *component_sizes;
     uint32_t *massive_component;
     uint32_t massive_size;
@@ -105,6 +103,8 @@ void MakeConnected(int32_t N,  NodeList *nodes, EdgeList *edges, uint32_t Buffer
     double  distance = 0;
     EdgeList edge_buffer = {NULL, NULL, NULL, 0, 0, 0, 0};
     
+    
+    N = options->N;
     
     // TODO memory allocation error handling
     // components are numbered from 1
@@ -182,7 +182,7 @@ void MakeConnected(int32_t N,  NodeList *nodes, EdgeList *edges, uint32_t Buffer
                     
                     distance = sqrt((xdiff * xdiff) + (ydiff * ydiff));
                 }
-                AddEdgeToBuffer(edges, &edge_buffer, (uint32_t)i, massive_component[j], distance);
+                AddEdgeToBuffer(options, edges, &edge_buffer, (uint32_t)i, massive_component[j], distance);
                 // case 1 purposely drops through to default processing
             default: component_sizes[nodes->component[i] - 1] -= 1;
                 
@@ -193,5 +193,5 @@ void MakeConnected(int32_t N,  NodeList *nodes, EdgeList *edges, uint32_t Buffer
     free(massive_component);
     
     // flush out our buffer
-    CopyEdgeList(edges, &edge_buffer);
+    CopyEdgeList(options, edges, &edge_buffer);
 }

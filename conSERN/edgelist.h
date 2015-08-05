@@ -9,15 +9,6 @@
 #ifndef __conSERN__edgelist__
 #define __conSERN__edgelist__
 
-#ifdef MATLAB
-#include "mex.h"
-#define caller_realloc mxRealloc
-#define caller_calloc mxCalloc
-#else
-#define caller_realloc realloc
-#define caller_calloc  calloc
-#endif
-
 #include "options.h"
 #include <inttypes.h>
 #include <string.h>
@@ -51,7 +42,7 @@ void closeEdgeList(void);
 
 // these functions are in the header because we want them to be inlined
 
-static inline uint64_t CopyEdgeList(EdgeList *l, EdgeList *b)
+static inline uint64_t CopyEdgeList(Options *options, EdgeList *l, EdgeList *b)
 {
     uint64_t total;
     uint64_t count;
@@ -85,12 +76,12 @@ static inline uint64_t CopyEdgeList(EdgeList *l, EdgeList *b)
             l->allocated = total;
         
         /* realloc on a null pointer acts like malloc */
-        l->from = caller_realloc(l->from, sizeof(uint32_t) * l->allocated);
-        l->to = caller_realloc(l->to, sizeof(uint32_t) * l->allocated);
+        l->from = options->realloc(l->from, sizeof(uint32_t) * l->allocated);
+        l->to = options->realloc(l->to, sizeof(uint32_t) * l->allocated);
         
         /* only re-allocate space for the "distances" if required */
         if (l->weights_enabled)
-            l->weight = caller_realloc(l->weight,sizeof(float) * l->allocated);
+            l->weight = options->realloc(l->weight,sizeof(float) * l->allocated);
         
         /* TODO: we can do this better with some math */
         l->growth =  l->allocated / 10;
@@ -120,12 +111,12 @@ static inline uint64_t CopyEdgeList(EdgeList *l, EdgeList *b)
 }
 
 
-static inline uint64_t AddEdgeToBuffer(EdgeList *l, EdgeList *b, uint32_t from, uint32_t to, double weight)
+static inline uint64_t AddEdgeToBuffer(Options *options, EdgeList *l, EdgeList *b, uint32_t from, uint32_t to, double weight)
 {
     
     if (b->count >= b->allocated)
     {
-        CopyEdgeList(l, b);
+        CopyEdgeList(options, l, b);
     }
     
     

@@ -14,7 +14,7 @@
 
 int Components(Options *options,  NodeList *nodes, EdgeList* edges);
 
-void MakeConnected(int32_t N, NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
+void MakeConnected(Options *options,  NodeList *nodes, EdgeList *edges, uint32_t BufferSize,
                    float* x, float* y, uint32_t component_count);
 
 #endif /* defined(__conSERN__connected__) */

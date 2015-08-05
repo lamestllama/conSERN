@@ -170,6 +170,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     memset(&options, 0, sizeof(Options));
     
     
+    /* first tell conSERN what memory allocators */
+    /* to use for data returned to us            */
+    options.realloc = mxRealloc;
+    options.calloc = mxCalloc;
+    
     /* check what optional outputs are required */
     /* only allocate space for the "distances" if required */
     if (nlhs >= 6) options.weights_enabled = 1;
