@@ -174,8 +174,8 @@ static inline double vecCross(const VectorStruct *a, const VectorStruct *b)
 
 // subtract vector b from vector a
 static inline VectorStruct *vecSub(const VectorStruct *a,
-                                     const VectorStruct *b,
-                                     VectorStruct *result)
+                                   const VectorStruct *b,
+                                   VectorStruct *result)
 {
     result->x = a->x - b->x;
     result->y = a->y - b->y;
@@ -448,7 +448,7 @@ uint32_t ellipseInside(const GeometryStruct *g, double x, double y)
 // the region and initialises a GeometryStruct .
 GeometryStruct *geometryGenerate(const Options* options,
                                  GeometryType type,
-                                PolygonStruct *p)
+                                 PolygonStruct *p)
 {
     uint32_t i;
     GeometryStruct *g;
@@ -792,13 +792,7 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     break;
                     
                 case polygon:
-                    if (g->Mx * g->My == 1) // single bucket case
-                    {
-                        bucket->p = 1;
-                        bucket->status = partial;
-                        break;
-                        
-                    }
+                    
                     
                     clippingPoly.vertices[0].x = i * g->bucketSize + g->origin.x;
                     clippingPoly.vertices[0].y = j * g->bucketSize + g->origin.y;
@@ -812,6 +806,16 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     clippingPoly.vertices[3].y = clippingPoly.vertices[0].y;
                     
                     result = polygonClip(g->polygon, &clippingPoly);
+                    
+                    if (g->Mx * g->My == 1) // single bucket case
+                    {
+                        bucket->p = 1;
+                        bucket->status = partial;
+                        bucket->polygon = result;
+                        break;
+                        
+                    }
+                    
                     
                     switch (result-> count)
                 {
