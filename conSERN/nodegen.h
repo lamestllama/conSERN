@@ -45,8 +45,8 @@ typedef struct
     float    *y;
     uint64_t count;
     uint64_t start;
-    int32_t i;
-    int32_t j;
+    uint32_t i;
+    uint32_t j;
     double  p;
     BucketStatus status;
     PolygonStruct *polygon;

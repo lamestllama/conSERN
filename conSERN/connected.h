@@ -12,6 +12,6 @@
 #include "edgelist.h"
 #include "nodegen.h"
 
-int Components(Options *options,  NodeList *nodes, EdgeList* edges);
+uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges);
 
 #endif /* defined(__conSERN__connected__) */

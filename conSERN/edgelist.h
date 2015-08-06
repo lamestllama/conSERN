@@ -123,7 +123,7 @@ static inline uint64_t AddEdgeToBuffer(Options *options, EdgeList *l, EdgeList *
     b->from[b->count] = from;
     b->to[b->count] = to;
     
-    if (b->weights_enabled) b->weight[b->count] = weight;
+    if (b->weights_enabled) b->weight[b->count] = (float)weight;
     
     (b->count)++;
     

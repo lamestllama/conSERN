@@ -16,7 +16,8 @@
 static inline uint32_t geom_rand(double p, uint32_t thread)
 {
     /* should probably check that 0<=p<1 */
-    return(1 + floor(log((GetUint(thread) + 1) * INTP_TO_DOUBLEP) / log(1 - p)));//
+    return (uint32_t) (1 + floor(log((GetUint(thread) + 1) * INTP_TO_DOUBLEP) /
+                                 log(1 - p)));//
 }
 
 
@@ -24,12 +25,8 @@ static inline uint32_t geom_rand(double p, uint32_t thread)
 /* lambda = -log2(1-p) */
 static inline uint32_t geom_rand2(double lambda, uint32_t thread)
 {
-    uint32_t a;
-    
-    /* should probably check that 0<=p<1 */
-    a = (-floor((log2(GetUint(thread) + 1) - 32) / lambda));
-    
-    return a;
+    /* should probably check that 0<=p<1 but dont want to flush pipeline */
+    return (uint32_t) (-floor((log2(GetUint(thread) + 1) - 32) / lambda));
 }
 
 #endif /* defined(__conSERN__geometric__) */

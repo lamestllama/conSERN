@@ -49,7 +49,7 @@ double ellipseRectangleIntersectArea(const GeometryStruct *g, const PolygonStruc
 {
     ellipseHelperStruct Ai[4];
     vHelperStruct V[4];
-    VectorStruct pOffset[4];
+  
     double S[4];
     double s = 0;
     int i;
@@ -545,10 +545,10 @@ void * GenerateNodes(void *t)
             case full:
                 for (j = 0; j < bucket->count; j++)
                 {
-                    bucket->x[j] =  g->origin.x +
-                    (((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
-                    bucket->y[j] =  g->origin.y +
-                    (((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                    bucket->x[j] =  (float)g->origin.x +
+                    (float)(((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                    bucket->y[j] =  (float)g->origin.y +
+                    (float)(((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
                 }
                 break;
                 
@@ -562,10 +562,10 @@ void * GenerateNodes(void *t)
                 case rectangle:
                     for (j = 0; j < bucket->count; j++)
                     {
-                        bucket->x[j] =  g->origin.x +
-                        (((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
-                        bucket->y[j] =  g->origin.y +
-                        (((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->x[j] =  (float)g->origin.x +
+                        (float)(((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->y[j] =  (float)g->origin.y +
+                        (float)(((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
                         
                         // reject the point if not inside
                         if ((bucket->x[j] > g->xSize + g->origin.x) ||
@@ -577,10 +577,10 @@ void * GenerateNodes(void *t)
                 case ellipse:
                     for (j = 0; j < bucket->count; j++)
                     {
-                        bucket->x[j] =  g->origin.x +
-                        (((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
-                        bucket->y[j] =  g->origin.y +
-                        (((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->x[j] =  (float)g->origin.x +
+                        (float)(((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->y[j] =  (float)g->origin.y +
+                        (float)(((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
                         
                         // reject the point if not inside
                         if (0 == ellipseInside(g, bucket->x[j], bucket->y[j]))
@@ -592,10 +592,10 @@ void * GenerateNodes(void *t)
                     
                     for (j = 0; j < bucket->count; j++)
                     {
-                        bucket->x[j] =  g->origin.x +
-                        (((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
-                        bucket->y[j] =  g->origin.y +
-                        (((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->x[j] =  (float)g->origin.x +
+                        (float)(((double) bucket->i + GetUniform(thread_data->thread_id)) * g->bucketSize);
+                        bucket->y[j] =  (float)g->origin.y +
+                        (float)(((double) bucket->j + GetUniform(thread_data->thread_id)) * g->bucketSize);
                         
                         // reject the point if not inside
                         if (!polygonInside(bucket->polygon,

@@ -22,7 +22,7 @@
 void * BusyWork(void *t)
 {
     
-    int64_t i, j;
+    uint64_t i, j;
     int64_t k, S;
     uint32_t bucket_a, bucket_b;
     double p, lambda, distance, x_diff, y_diff;
@@ -274,7 +274,6 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     ThreadDataStruct *thread_data;
     int rc;
     uint32_t t;
-    uint32_t component_count = 0;
     void *status;
     BucketStruct *buckets;
     double *Q;
@@ -405,9 +404,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     // be redundant
     
     if (options->components_enabled || options->connected)
-    {
-        component_count = Components(options, nodes, edges);
-    }
+        Components(options, nodes, edges);
+
     
     /* cleanup */
     free(buckets);

@@ -34,8 +34,8 @@ static inline void AllocRandom(uint32_t u, uint32_t ThreadCount)
     
     for(i = 0; i < ThreadCount; i++)
     {
-        uint_m_z[i] = rand();
-        uint_m_w[i] = rand();
+        uint_m_z[i] = (uint32_t)rand();
+        uint_m_w[i] = (uint32_t)rand();
     }
     
 }

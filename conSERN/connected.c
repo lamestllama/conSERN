@@ -17,16 +17,16 @@
 
 
 
-uint64_t find(uint32_t x, uint32_t *roots, int8_t *signs)
+uint32_t find(uint32_t x, uint32_t *roots, int8_t *signs)
 {
     // find the root
-    int64_t root = x;
+    uint32_t root = x;
     while (signs[root] >= 0) root = roots[root];
     
     // compress paths
     while (x != root)
     {
-        int64_t old = x;
+        uint32_t old = x;
         x = roots[x];
         roots[old] =  root ;
     }
@@ -55,16 +55,17 @@ bool merge(uint32_t x, uint32_t y, uint32_t *roots, int8_t *signs)
 // Union Set algorithm to find the connected components and then
 // a heuristic to link the components together in reasonable time
 
-int Components(Options *options,  NodeList *nodes, EdgeList* edges)
+uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
 {
     
     uint32_t *roots;
     uint32_t *componentRoots;
     int8_t *signs;
     
-    int64_t i, j, d;
+    uint32_t i, c;
     uint64_t e;
-    uint32_t c;
+    int64_t j, d;
+
     uint32_t N;
     uint32_t sLargest;
     uint32_t iLargest;
@@ -193,8 +194,8 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
         
         // look in  the direction of the largest components root
         // for a nearby node that belongs to the largest component.
-        for (j = componentRoots[i]  + d;
-             abs((int)(j - componentRoots[i])) <= LOCALE; j = j + d)
+        for (j =  d + componentRoots[i];
+             abs((int)(j - componentRoots[i])) <= LOCALE; j = d + j)
             if (roots[j] == 1) break;
         
         // if such a node is found within LOCALE steps connect to
