@@ -22,7 +22,8 @@
 void * BusyWork(void *t)
 {
     
-    int64_t i, j, k, S;
+    int64_t i, j;
+    int64_t k, S;
     uint32_t bucket_a, bucket_b;
     double p, lambda, distance, x_diff, y_diff;
     BucketStruct bucket_A, bucket_B;
@@ -248,7 +249,7 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
         {
             
             // distance = sqrt(t[i] * t[i] + t[j] * t[j]);
-            options->distance(t[i], t[j]);
+            distance = options->distance(t[i], t[j]);
             Q[i + g->Mx * j] =
             options->probGivenDistance(options->s1, options->s2, distance);
         }

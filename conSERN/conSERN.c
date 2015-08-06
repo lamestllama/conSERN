@@ -13,9 +13,7 @@
 #include "edgeprobfuncs.h"
 #include <time.h>
 
-#define NUM_ELEMS(arr)                                                 \
-(sizeof (struct {int not_an_array:((void*)&(arr) == &(arr)[0]);}) * 0 \
-+ sizeof (arr) / sizeof (*(arr)))
+#define NUM_ELEMS(X)           (sizeof(X)/sizeof(*(X)))
 
 #define PROBABILITY_FUN_rhs 0
 #define S_rhs               1
@@ -56,12 +54,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     GeometryStruct *geometry;
     PolygonStruct *polygon;
     VectorStruct *vector;
-    int i;
+    uint64_t i;
     int arg;
                   // 0   1  2  3   4   5   6   7   8   9  10  11  12
     int nonZero[] = {0,  0, 1, 1,  0 , 0,  0,  0,  1,  1,  0,  1, 0};
-    int dimM[]    = {1,  1, 1, 1,  1 , 1,  2,  1,  1,  1,  1,  1, 1};
-    int dimN[]    = {1, -1, 1, 1,  1 , 1, -2,  1,  1,  1,  1,  1, 1};
+    int64_t dimM[]    = {1,  1, 1, 1,  1 , 1,  2,  1,  1,  1,  1,  1, 1};
+    int64_t dimN[]    = {1, -1, 1, 1,  1 , 1, -2,  1,  1,  1,  1,  1, 1};
     
 
 
@@ -75,7 +73,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     
     /* Check for proper number of input and output arguments. */
-    if ((nrhs < FIRST_DEFAULT ) || (nrhs > NUM_ELEMS(dimM)))
+    if ((nrhs < FIRST_DEFAULT ) || (nrhs > (int)NUM_ELEMS(dimM)))
         mexErrMsgTxt("Incorrect number of input arguments: "
                      "[x, y, n_edges, edge_i, edge_j, edge_weights, "
                      "node_components] = conSERN( "
@@ -103,18 +101,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         // check dimensions match
         if (dimN[arg] > 0)
         {
-            if (mxGetN(prhs[arg]) != dimN[arg])
+            if ((int64_t)mxGetN(prhs[arg]) != dimN[arg])
             {
-                mexPrintf("\nArgument %i (%s) must have dimension N = %i\n",
+                mexPrintf("\nArgument %i (%s) must have dimN = %i\n",
                           arg + 1, *c, dimN[arg]);
                 mexErrMsgTxt("Error in arguments");
             }
         }
         else // dimN represents a minimum dimension
         {
-            if (mxGetN(prhs[arg]) < -dimN[arg])
+            if ((int64_t)mxGetN(prhs[arg]) < -dimN[arg])
             {
-                mexPrintf("\nArgument %i (%s) must have dimension N >= %i\n",
+                mexPrintf("\nArgument %i (%s) must have dimN >= %i\n",
                           arg + 1, *c, -dimN[arg]);
                 mexErrMsgTxt("Error in arguments");
             }
@@ -124,18 +122,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         // check dimensions match
         if (dimM[arg] > 0)
         {
-            if (mxGetM(prhs[arg]) != dimM[arg])
+            if ((int64_t)mxGetM(prhs[arg]) != dimM[arg])
             {
-                mexPrintf("\nArgument %i (%s) must have dimension M = %i\n",
+                mexPrintf("\nArgument %i (%s) must have dimM = %i\n",
                           arg + 1, *c, dimM[arg]);
                 mexErrMsgTxt("Error in arguments");
             }
         }
         else // dimM represents a minimum dimension
         {
-            if (mxGetM(prhs[arg]) < -dimM[arg])
+            if ((int64_t)mxGetM(prhs[arg]) < -dimM[arg])
             {
-                mexPrintf("\nArgument %i (%s) must have dimension M >= %i\n",
+                mexPrintf("\nArgument %i (%s) must have dimM >= %i\n",
                           arg + 1, *c, -dimM[arg]);
                 mexErrMsgTxt("Error in arguments");
             }

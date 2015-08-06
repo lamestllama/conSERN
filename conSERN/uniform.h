@@ -26,7 +26,7 @@ extern void FreeRandom();
 static inline void AllocRandom(uint32_t u, uint32_t ThreadCount)
 {
     
-    int i;
+    uint32_t i;
     
     srand(u);
     uint_m_z = malloc(sizeof(uint32_t) * ThreadCount);

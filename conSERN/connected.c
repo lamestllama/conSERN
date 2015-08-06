@@ -63,6 +63,7 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     int8_t *signs;
     
     int64_t i, j, d;
+    uint64_t e;
     uint32_t c;
     uint32_t N;
     uint32_t sLargest;
@@ -95,13 +96,14 @@ int Components(Options *options,  NodeList *nodes, EdgeList* edges)
     }
     
     // merge into components
-    for(i = 0; i < edges->count; i++)
-        merge(edges->from[i] - 1, edges->to[i] - 1, roots, signs);
+    for(e = 0; e < edges->count; e++)
+        merge(edges->from[e] - 1, edges->to[e] - 1, roots, signs);
     
     
     // compress the paths, count the components
     // and find the largest component
     sLargest = 0;
+    iLargest = 0;
     for(i = 0, c = 0; i < N; i++)
     {
         find(i, roots, signs);

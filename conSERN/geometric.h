@@ -24,8 +24,12 @@ static inline uint32_t geom_rand(double p, uint32_t thread)
 /* lambda = -log2(1-p) */
 static inline uint32_t geom_rand2(double lambda, uint32_t thread)
 {
+    uint32_t a;
+    
     /* should probably check that 0<=p<1 */
-    return(-floor((log2(GetUint(thread) + 1) - 32) / lambda));
+    a = (-floor((log2(GetUint(thread) + 1) - 32) / lambda));
+    
+    return a;
 }
 
 #endif /* defined(__conSERN__geometric__) */
