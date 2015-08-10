@@ -9,6 +9,7 @@
 #ifndef conSERN_Header_h
 #define conSERN_Header_h
 #include <stdlib.h>
+#include <stdint.h>
 #include "edgeprobfuncs.h"
 #include "metrics.h"
 
