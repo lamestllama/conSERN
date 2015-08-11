@@ -15,14 +15,26 @@
 #endif
 
 
+
 double waxman(double s, __attribute__((unused))double unused, __attribute__((unused)) double q, double d)
 {
     return exp(-s * d);
 }
 
-double clipped_waxman(double s, double r, __attribute__((unused)) double q, double d)
+double clipped_waxman(double s, __attribute__((unused)) double h,  double q, double d)
+{
+    return  max(exp(-s * d),1/q);
+}
+
+double waxman_transition_threshold(double s, double r, __attribute__((unused)) double q, double d)
 {
     return (d > r) ? 0.0 : exp(-s * d);
+}
+
+double threshold(double r, __attribute__((unused))double unused,
+                 __attribute__((unused))__attribute__((unused)) double q, double d)
+{
+    return (d < r) ? 1.0 : 0.0;
 }
 
 double constant(__attribute__((unused))double unused1 ,
@@ -33,11 +45,6 @@ double constant(__attribute__((unused))double unused1 ,
     return 1.0;
 }
 
-double threshold(double r, __attribute__((unused))double unused,
-                 __attribute__((unused))__attribute__((unused)) double q, double d)
-{
-    return (d < r) ? 1.0 : 0.0;
-}
 
 double powerlaw(double theta1, double theta2, __attribute__((unused)) double q, double d)
 {
@@ -61,8 +68,5 @@ double maxentropy(double s,  __attribute__((unused))double unused, __attribute__
     return (exp(-s * d))/ (1 + q * exp(-s * d));
 }
 
-double clipped_waxman2(double s, double h, __attribute__((unused)) double q, double d)
-{
-    return  min(exp(-s * d),h);
-}
+
 

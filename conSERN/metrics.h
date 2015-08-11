@@ -23,8 +23,8 @@ extern double discrete(double xdiff, double ydiff);
 static DistanceFunction  distanceFunctions[] =
 {   euclidean,
     manhattan,
-    maxdist,
-    discrete
+    discrete,
+    maxdist
 };
 
 #endif /* defined(__conSERN__metrics__) */

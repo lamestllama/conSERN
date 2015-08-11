@@ -21,10 +21,13 @@ extern double waxman(double s, double unused, double q, double d);
 extern double clipped_waxman(double s, double r, double q, double d);
 
 
-extern double constant(double unused1 , double unused2, double q, double d);
+extern double waxman_transition_threshold(double s, double h, double q, double d);
 
 
 extern double threshold(double r, double unused, double q, double d);
+
+
+extern double constant(double unused1 , double unused2, double q, double d);
 
 
 extern double powerlaw(double theta1, double theta2, double q, double d);
@@ -39,19 +42,17 @@ extern double exponential(double L, double unused, double q, double d);
 extern double maxentropy(double s, double unused, double q, double d);
 
 
-extern double clipped_waxman2(double s, double h, double q, double d);
-
 
 static ProbabilityFunction  probabilityFunctions[] =
     {   waxman,
         clipped_waxman,
-        constant,
+        waxman_transition_threshold,
         threshold,
+        constant,
         powerlaw,
         cauchy,
         exponential,
-        maxentropy,
-        clipped_waxman2
+        maxentropy
     };
 
 
