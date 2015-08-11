@@ -21,9 +21,9 @@ double waxman(double s, __attribute__((unused))double unused, __attribute__((unu
     return exp(-s * d);
 }
 
-double clipped_waxman(double s, __attribute__((unused)) double h,  double q, double d)
+double clipped_waxman(double s, __attribute__((unused)) double unused,  double q, double d)
 {
-    return  max(exp(-s * d),1/q);
+    return  min(exp(-s * d),1/q);
 }
 
 double waxman_transition_threshold(double s, double r, __attribute__((unused)) double q, double d)
