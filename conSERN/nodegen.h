@@ -86,7 +86,7 @@ GeometryStruct *geometryGenerate(const Options* options,
                                  GeometryType type,
                                  PolygonStruct *p);
 
-void polygonAppend(PolygonStruct *p, const VectorStruct *v);
+void polygonAppend(const Options *options, PolygonStruct *p, const VectorStruct *v);
 
 PolygonStruct *polygonNew(void);
 

@@ -76,7 +76,8 @@ void * BusyWork(void *t)
     
     
     // create some space to store the edges
-    AllocateEdgeBuffer(&edge_buffer, thread_data->BufferSize,
+    AllocateEdgeBuffer(thread_data->options, &edge_buffer,
+                       thread_data->BufferSize,
                        edges->weights_enabled);
     
     if ((thread_data->options->algorithm == 0) && (1.0 - q > 0.0))
@@ -237,12 +238,22 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
     
     /* calloc initialises with zeros */
     double *t = calloc(options->M, sizeof(double));
-    assert(NULL != t);
+    
+    if (t == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     
     for (i = 1; i < options->M; i++) t[i] = (i - 1) * g->bucketSize;
     
     Q = malloc((size_t) sizeof(double) * g->Mx * g->My);
-    assert(NULL != Q);
+    
+    if (Q == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     for(j = 0; j < g->My; j++)
     {
         for(i = 0; i < g->Mx; i++)
@@ -300,7 +311,16 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     // some memory to return to the caller thus allocated with
     // provided memory allocation function
     nodes->x = options->calloc(options->N, sizeof(float));
+    if (nodes->x == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     nodes->y = options->calloc(options->N, sizeof(float));
+    if (nodes->y == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
     
     
     // creates bucket structures with pre-initialised node counts
@@ -313,7 +333,17 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     // or edges.
     
     threads = calloc(options->ThreadCount, sizeof(pthread_t));
+    if (threads == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     thread_data = calloc(options->ThreadCount, sizeof(ThreadDataStruct));
+    if (thread_data == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     for(t=0; t < options->ThreadCount; t++)
     {
         thread_data[t].thread_id = t;

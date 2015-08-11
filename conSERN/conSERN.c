@@ -172,6 +172,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     options.realloc = mxRealloc;
     options.calloc = mxCalloc;
     
+    /* and how to display error and exit */
+    
+    options.errIdAndTxt = mexErrMsgIdAndTxt;
+    
     /* check what optional outputs are required */
     /* only allocate space for the "distances" if required */
     if (nlhs >= 6) options.weights_enabled = 1;
@@ -266,7 +270,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     polygon = polygonNew();
     
-    for (i = 0;i <  mxGetN(data); i++) polygonAppend(polygon, vector + i);
+    for (i = 0;i <  mxGetN(data); i++)
+        polygonAppend(&options, polygon, vector + i);
     
     geometry = geometryGenerate( &options,
                                 (GeometryType)

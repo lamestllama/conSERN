@@ -86,8 +86,19 @@ uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
     else  // otherwise use the stdlib allocation routines
         roots = calloc(options->N, sizeof(uint32_t));
     
+    if (roots == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     // use this to indicate the roots of connected components
     signs = (int8_t *) calloc(N, sizeof(int8_t));
+    
+    if (signs == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     
     // set all nodes to be their own root
     for(i = 0; i < N; i++)
@@ -156,6 +167,10 @@ uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
     // component roots to speed subsequent itteration
     
     componentRoots = (uint32_t *) calloc(c, sizeof(uint32_t));
+    if (componentRoots == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
     
     // largest component assigned label 1 the
     // others are labeled arbitrarily labeled
@@ -181,7 +196,7 @@ uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
     // we will only add #components - 1 edges to connect
     // the graph now we can allocate the right sized buffer
     // prepare for allocation
-    AllocateEdgeBuffer(&edge_buffer, c, edges->weights_enabled);
+    AllocateEdgeBuffer(options, &edge_buffer, c, edges->weights_enabled);
     
     // this is dirty and uses the fact that nodes are numbered
     // close together so we will mainly be adding short links
