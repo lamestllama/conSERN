@@ -79,7 +79,7 @@ void * BusyWork(void *t)
     AllocateEdgeBuffer(&edge_buffer, thread_data->BufferSize,
                        edges->weights_enabled);
     
-    if (thread_data->options->algorithm == 0)
+    if ((thread_data->options->algorithm == 0) && (1.0 - q > 0.0))
     {
         
         /* Generate intra bucket edges in bucket_a */
