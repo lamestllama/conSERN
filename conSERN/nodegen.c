@@ -472,11 +472,12 @@ GeometryStruct *geometryGenerate(const Options* options,
     GeometryStruct *g;
     
     g = calloc(1, sizeof(GeometryStruct));
-    
-  
+    if (NULL == g)
+        options->errIdAndTxt("\n"__FILE__,
+                         " line %d. Error allocating memory",
+                         __LINE__);
     
     g->type = type;
-    
     g->polygon = p;
     
     g->xSize = g->origin.x = g->polygon->vertices[0].x;
@@ -686,7 +687,8 @@ void SetBucketSizes(const Options* options, const GeometryStruct* g, BucketStruc
 
 
 
-BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, NodeList *nodes)
+BucketStruct *GenerateBuckets(const Options *options,
+                              const GeometryStruct *g, NodeList *nodes)
 {
     uint32_t i;
     uint32_t j;
