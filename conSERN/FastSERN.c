@@ -105,7 +105,7 @@ void * BusyWork(void *t)
                 
                 distance = dist(x_diff, y_diff);
                 
-                if (GetUniform(thread_id) < prob(s1, s2, distance))
+                if (GetUniform(thread_id) < prob(s1, s2, q, distance))
                     AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                     bucket_A.start + (uint32_t)i,
                                     bucket_A.start + (uint32_t) j, distance);
@@ -143,7 +143,7 @@ void * BusyWork(void *t)
                     
                     distance = dist(x_diff, y_diff);
                     
-                    if (GetUniform(thread_id) * p < prob(s1, s2, distance))
+                    if (GetUniform(thread_id) * p < prob(s1, s2, q, distance))
                         AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
                                         bucket_B.start + (uint32_t)j, distance);
@@ -172,7 +172,7 @@ void * BusyWork(void *t)
                     
                     distance = dist(x_diff, y_diff);
                     
-                    if (GetUniform(thread_id) < q * prob(s1, s2, distance))
+                    if (GetUniform(thread_id) < q * prob(s1, s2, q, distance))
                         AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
                                         bucket_A.start + (uint32_t)j, distance);
@@ -200,7 +200,7 @@ void * BusyWork(void *t)
                         
                         distance = dist(x_diff, y_diff);
                         
-                        if (GetUniform(thread_id) < q * prob(s1, s2, distance))
+                        if (GetUniform(thread_id) < q * prob(s1, s2, q, distance))
                             AddEdgeToBuffer(thread_data->options,
                                             edges, &edge_buffer,
                                             bucket_A.start + (uint32_t) i,
@@ -251,7 +251,8 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
             // distance = sqrt(t[i] * t[i] + t[j] * t[j]);
             distance = options->distance(t[i], t[j]);
             Q[i + g->Mx * j] =
-            options->probGivenDistance(options->s1, options->s2, distance);
+            options->probGivenDistance(options->s1, options->s2,
+                                       options->q, distance);
         }
     }
     
