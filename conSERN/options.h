@@ -16,6 +16,13 @@
 typedef void *(*ReallocFunction)(void *, size_t);
 typedef void *(*CallocFunction)(size_t, size_t);
 
+
+
+typedef void  (*errIdAndTxt)(const char * identifier,
+                             const char * warn_msg,	// printf style
+                             ...);
+
+
 typedef struct
 {
     double s1;
@@ -37,6 +44,7 @@ typedef struct
     DistanceFunction distance;
     ReallocFunction realloc;
     CallocFunction calloc;
+    errIdAndTxt errIdAndTxt;
 
 } Options;
 

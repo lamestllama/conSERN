@@ -28,7 +28,7 @@ double maxdist(double xdiff, double ydiff)
     return max(xdiff, ydiff);
 }
 
-double mindist(double xdiff, double ydiff)
+double discrete(double xdiff, double ydiff)
 {
-    return min(xdiff, ydiff);
+    return  ((0.0 == xdiff) && (0.0 == ydiff)) ? 0.0 : 1.0;
 }

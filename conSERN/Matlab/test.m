@@ -18,7 +18,7 @@ clipped_waxman2= 8
 euclidean=0
 manhattan=1
 max=2
-min=3
+discrete=3
 
 
 %some sample regions
@@ -131,7 +131,7 @@ hold off
 A = A3
 shape = polygon
 DistanceFunction = maxentropy
-s = [0.01 0.02]
+s = 0.01
 q = 0.02
 
 

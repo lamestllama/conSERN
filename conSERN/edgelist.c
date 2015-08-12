@@ -12,7 +12,7 @@ uint32_t lock;
 uint64_t memccpyThreadCount;
 pthread_mutex_t mutex_realloc;
 
-uint64_t AllocateEdgeBuffer(EdgeList *l, uint32_t buffer_size, uint32_t enable_weights)
+uint64_t AllocateEdgeBuffer(Options *options, EdgeList *l, uint32_t buffer_size, uint32_t enable_weights)
 {
     l->weights_enabled = enable_weights;
     l->count = 0;
@@ -21,11 +21,26 @@ uint64_t AllocateEdgeBuffer(EdgeList *l, uint32_t buffer_size, uint32_t enable_w
     
     
     l->from = malloc(sizeof(uint32_t) * l->allocated);
+    if (l->from == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     l->to = malloc(sizeof(uint32_t) * l->allocated);
+    if (l->to == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
     
     
     if (l->weights_enabled)
+    {
         l->weight = malloc(sizeof(float) * l->allocated);
+        if (l->weight == NULL)
+            options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    }
     
     return l->allocated;
 }

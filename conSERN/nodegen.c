@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "options.h"
 #include "uniform.h"
 #include "binomial.h"
 #include "nodegen.h"
@@ -251,7 +252,6 @@ int edgeIntersect(const VectorStruct *a0, const VectorStruct *a1,
 PolygonStruct *polygonNew(void)
 {
     // calloc fills in allocated structure with zeros
-    // TODO memory allocation error handling.
     return (PolygonStruct *) calloc(1, sizeof(PolygonStruct));
 }
 
@@ -265,7 +265,7 @@ void polygonFree(PolygonStruct *p)
     free(p);
 }
 
-void polygonAppend(PolygonStruct *p, const VectorStruct *v)
+void polygonAppend(const Options *options, PolygonStruct *p, const VectorStruct *v)
 {
     // count should never get bigger than allocated
     assert(p->allocated >= p->count);
@@ -279,6 +279,10 @@ void polygonAppend(PolygonStruct *p, const VectorStruct *v)
         if (p->allocated == 0) p->allocated = 4;
         p->vertices = (VectorStruct *)
         realloc(p->vertices, sizeof(VectorStruct) * p->allocated);
+        if (NULL == p->vertices)
+            options->errIdAndTxt("\n"__FILE__,
+                                 " line %d. Error unable to allocate memory",
+                                 __LINE__);
     }
     p->vertices[p->count++] = *v;
 }
@@ -339,7 +343,7 @@ int polygonDirection(const PolygonStruct *p)
 }
 
 
-void polygonClipEdge(PolygonStruct *subPoly,
+void polygonClipEdge(const Options *options, PolygonStruct *subPoly,
                      VectorStruct *edgeOrigin, VectorStruct *edgeEnd,
                      int polygonDirection, PolygonStruct *result)
 {
@@ -361,7 +365,8 @@ void polygonClipEdge(PolygonStruct *subPoly,
     
     // if it is on the inside of the edge being considered
     //  considered we keep it for now
-    if (prevSide != -polygonDirection) polygonAppend(result, prevVertex);
+    if (prevSide != -polygonDirection)
+        polygonAppend(options, result, prevVertex);
     
     
     for (i = 0; i < subPoly->count; i++)
@@ -374,19 +379,21 @@ void polygonClipEdge(PolygonStruct *subPoly,
         // point to the polygon being returned
         if (prevSide + currentSide == 0 && prevSide)
             if (edgeIntersect(edgeOrigin, edgeEnd, prevVertex, currentVertex, &tmp))
-                polygonAppend(result, &tmp);
+                polygonAppend(options, result, &tmp);
         
         // we already considered the last vertex in the polygon
         if (i == subPoly->count - 1) break;
         
-        if (currentSide != -polygonDirection) polygonAppend(result, currentVertex);
+        if (currentSide != -polygonDirection)
+            polygonAppend(options, result, currentVertex);
         prevVertex = currentVertex;
         prevSide = currentSide;
     }
 }
 
 
-PolygonStruct *polygonClip(PolygonStruct *poly, PolygonStruct *clip)
+PolygonStruct *polygonClip(const Options *options, PolygonStruct *poly,
+                           PolygonStruct *clip)
 {
     uint32_t i;
     PolygonStruct *in;
@@ -395,7 +402,16 @@ PolygonStruct *polygonClip(PolygonStruct *poly, PolygonStruct *clip)
     int32_t direction;
     
     in = polygonNew();
+    if (in == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
+    
     out = polygonNew();
+    if (out == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
     
     // get the direction of the clipping polygon
     direction = polygonDirection(clip);
@@ -403,7 +419,7 @@ PolygonStruct *polygonClip(PolygonStruct *poly, PolygonStruct *clip)
     // clip the boundary polygon along the edge that implicitly closes
     // the clipping polygon i.e. between the first point given and the
     // last given they must not be coincident
-    polygonClipEdge(poly, clip->vertices + clip->count - 1,
+    polygonClipEdge(options, poly, clip->vertices + clip->count - 1,
                     clip->vertices, direction, out);
     
     
@@ -421,7 +437,8 @@ PolygonStruct *polygonClip(PolygonStruct *poly, PolygonStruct *clip)
             out->count = 0;
             break;
         }
-        polygonClipEdge(in, clip->vertices + i, clip->vertices + i + 1, direction, out);
+        polygonClipEdge(options, in, clip->vertices + i,
+                        clip->vertices + i + 1, direction, out);
     }
     
     polygonFree(in);
@@ -454,10 +471,12 @@ GeometryStruct *geometryGenerate(const Options* options,
     GeometryStruct *g;
     
     g = calloc(1, sizeof(GeometryStruct));
-    assert(NULL != g);
+    if (NULL == g)
+        options->errIdAndTxt("\n"__FILE__,
+                         " line %d. Error allocating memory",
+                         __LINE__);
     
     g->type = type;
-    
     g->polygon = p;
     
     g->xSize = g->origin.x = g->polygon->vertices[0].x;
@@ -667,12 +686,13 @@ void SetBucketSizes(const Options* options, const GeometryStruct* g, BucketStruc
 
 
 
-BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, NodeList *nodes)
+BucketStruct *GenerateBuckets(const Options *options,
+                              const GeometryStruct *g, NodeList *nodes)
 {
     uint32_t i;
     uint32_t j;
     uint32_t k;
-    uint32_t c;
+    int32_t c;
     uint32_t offset;
     double area;
     double bucketArea;
@@ -687,7 +707,10 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
     
     /* calloc used to zero all fields */
     BucketStruct * buckets = calloc(g->Mx * g->My, sizeof(BucketStruct));
-    assert(NULL != buckets);
+    if (buckets == NULL)
+        options->errIdAndTxt("\n"__FILE__,
+                             " line %d. Error unable to allocate memory",
+                             __LINE__);
     
     bucketArea = g->bucketSize * g->bucketSize;
     
@@ -763,11 +786,11 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     if(c == 0)
                     {
                         c += polygonInside(&clippingPoly,
-                                           g->origin.x + g->xSize / 2.0,
-                                           g->origin.y + g->ySize);
+                                           (float)(g->origin.x + g->xSize / 2.0),
+                                           (float)(g->origin.y + g->ySize));
                         c += polygonInside(&clippingPoly,
-                                           g->origin.x + g->xSize,
-                                           g->origin.y + g->ySize / 2.0);
+                                           (float)(g->origin.x + g->xSize),
+                                           (float)(g->origin.y + g->ySize / 2.0));
                         //mexPrintf("\ni = %i j= %i c=%i", i, j, c);
                     }
                     
@@ -805,7 +828,7 @@ BucketStruct *GenerateBuckets(const Options *options, const GeometryStruct *g, N
                     clippingPoly.vertices[3].x = clippingPoly.vertices[2].x;
                     clippingPoly.vertices[3].y = clippingPoly.vertices[0].y;
                     
-                    result = polygonClip(g->polygon, &clippingPoly);
+                    result = polygonClip(options, g->polygon, &clippingPoly);
                     
                     if (g->Mx * g->My == 1) // single bucket case
                     {

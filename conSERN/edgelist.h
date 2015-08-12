@@ -32,7 +32,7 @@ typedef struct
 
 
 
-uint64_t AllocateEdgeBuffer(EdgeList *l, uint32_t buffer_size, uint32_t enable_weights);
+uint64_t AllocateEdgeBuffer(Options *options, EdgeList *l, uint32_t buffer_size, uint32_t enable_weights);
 void openEdgeList(EdgeList *l, Options *options);
 void closeEdgeList(void);
 
@@ -82,6 +82,15 @@ static inline uint64_t CopyEdgeList(Options *options, EdgeList *l, EdgeList *b)
         /* only re-allocate space for the "distances" if required */
         if (l->weights_enabled)
             l->weight = options->realloc(l->weight,sizeof(float) * l->allocated);
+        
+        if ((NULL == l->from) || (NULL == l->to) ||
+            (l->weights_enabled && (NULL == l->weight)))
+        {
+            options->errIdAndTxt("\n"__FILE__,
+                                 " line %d. Error unable to allocate memory",
+                                 __LINE__);
+        }
+            
         
         /* TODO: we can do this better with some math */
         l->growth =  l->allocated / 10;

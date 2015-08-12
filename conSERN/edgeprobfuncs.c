@@ -15,53 +15,58 @@
 #endif
 
 
-double waxman(double s, __attribute__((unused))double unused, double d)
+
+double waxman(double s, __attribute__((unused))double unused, __attribute__((unused)) double q, double d)
 {
     return exp(-s * d);
 }
 
-double clipped_waxman(double s, double r, double d)
+double clipped_waxman(double s, __attribute__((unused)) double unused,  double q, double d)
+{
+    return  min(exp(-s * d),1/q);
+}
+
+double waxman_transition_threshold(double s, double r, __attribute__((unused)) double q, double d)
 {
     return (d > r) ? 0.0 : exp(-s * d);
 }
 
-double constant(__attribute__((unused))double unused1 ,
-                __attribute__((unused))double unused2,
-                __attribute__((unused))double d)
-{
-    return 1.0;
-}
-
 double threshold(double r, __attribute__((unused))double unused,
-                 __attribute__((unused))double d)
+                 __attribute__((unused))__attribute__((unused)) double q, double d)
 {
     return (d < r) ? 1.0 : 0.0;
 }
 
-double powerlaw(double theta1, double theta2, double d)
+double constant(__attribute__((unused))double unused1 ,
+                __attribute__((unused))double unused2,
+                __attribute__((unused)) double q,
+                 __attribute__((unused)) double d)
+{
+    return 1.0;
+}
+
+
+double powerlaw(double theta1, double theta2, __attribute__((unused)) double q, double d)
 {
     return pow(1 + theta1 * d, -theta2);
 }
 
-double cauchy(double theta1, double __attribute__((unused))unused, double d)
+double cauchy(double theta1, double __attribute__((unused))unused, __attribute__((unused)) double q, double d)
 {
     return pow(1 + theta1 * d * d, -1);
 }
 
-double exponential(double L, __attribute__((unused))double unused, double d)
+double exponential(double L, __attribute__((unused))double unused, __attribute__((unused)) double q, double d)
 {
     return exp(-d / (L - d));
 }
 
-double maxentropy(double s, double q2, double d)
+double maxentropy(double s,  __attribute__((unused))double unused, __attribute__((unused)) double q, double d)
 {
    // to do test this against a version with a
    // temporary variable for speed
-    return (q2 * exp(-s * d))/ (1 + q2 * exp(-s * d));
+    return (exp(-s * d))/ (1 + q * exp(-s * d));
 }
 
-double clipped_waxman2(double s, double h, double d)
-{
-    return  min(exp(-s * d),h);
-}
+
 
