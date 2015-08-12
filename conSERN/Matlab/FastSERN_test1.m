@@ -67,7 +67,7 @@ for i=1:runs
 end
 
 T = squeeze(min(times));
-E = round(squeeze(mean(edges)));
+E = squeeze(mean(edges));
 
 T_naive = min(times_naive);
 E_naive = mean(edges_naive);
@@ -116,3 +116,6 @@ grid on
 
 filename = sprintf('Plots/FastSERN_test1_loglog.eps', s)
 print('-depsc', filename);
+
+figure(3)
+plot(ns, 2*E./repmat(ns'-1, 1, 2) );

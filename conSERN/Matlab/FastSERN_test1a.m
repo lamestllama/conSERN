@@ -16,19 +16,19 @@ n_step = 0.25;
 max_n = 8.0;
 ns = ceil( 10.^[2:n_step:max_n] );
 max_naive = 10^5;
-max_matlab = 10^4.25;
+max_matlab = 10^4.25; 
 k = 1;
 Gs = laplace_trans(g, support, s);  
 q = k ./ ((ns-1) * Gs);
  
-runs = 2; % number of simulations to run
-Ms = [1]; % bucket dimension for small s
+runs = 100; % number of simulations to run
+Ms = [1 10]; % bucket dimension for small s
  
 % call program once to make sure it is in memory
 [N, E, d] = waxman_gen(ns(1), s, q(1), i, problem, parameters);
 [x y e from to] = conSERN(DistanceFunction, s, q(1), ns(1), metric, shape, A, connected, Ms(1), threads, algorithm, buffersize, seed);
 
-for i=1:runs
+for i=1:runs 
   fprintf('run %d of %d\n', i, runs);
   seed = i;
   for j=1:length(ns)
@@ -85,7 +85,7 @@ legend(plots, legend_str, 'location', 'northwest');
 set(gca, 'fontsize', 18);
 set(gca, 'xtick',  10.^[2:ceil(max_n)]);
 xlabel('n');
-ylabel('time (seconds)');
+ylabel('time (seconds)'); 
 
 filename = sprintf('Plots/FastSERN_test1a_semilogx.eps', s)
 print('-depsc', filename);
@@ -111,3 +111,7 @@ grid on
 
 filename = sprintf('Plots/FastSERN_test1a_loglog.eps', s)
 print('-depsc', filename);
+
+
+figure(3)
+plot(ns, 2*E./repmat(ns'-1, 1, 2) );
