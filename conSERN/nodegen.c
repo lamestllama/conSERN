@@ -251,7 +251,6 @@ int edgeIntersect(const VectorStruct *a0, const VectorStruct *a1,
 
 PolygonStruct *polygonNew(void)
 {
-    PolygonStruct *p;
     // calloc fills in allocated structure with zeros
     return (PolygonStruct *) calloc(1, sizeof(PolygonStruct));
 }
@@ -693,7 +692,7 @@ BucketStruct *GenerateBuckets(const Options *options,
     uint32_t i;
     uint32_t j;
     uint32_t k;
-    uint32_t c;
+    int32_t c;
     uint32_t offset;
     double area;
     double bucketArea;
@@ -787,11 +786,11 @@ BucketStruct *GenerateBuckets(const Options *options,
                     if(c == 0)
                     {
                         c += polygonInside(&clippingPoly,
-                                           g->origin.x + g->xSize / 2.0,
-                                           g->origin.y + g->ySize);
+                                           (float)(g->origin.x + g->xSize / 2.0),
+                                           (float)(g->origin.y + g->ySize));
                         c += polygonInside(&clippingPoly,
-                                           g->origin.x + g->xSize,
-                                           g->origin.y + g->ySize / 2.0);
+                                           (float)(g->origin.x + g->xSize),
+                                           (float)(g->origin.y + g->ySize / 2.0));
                         //mexPrintf("\ni = %i j= %i c=%i", i, j, c);
                     }
                     

@@ -22,7 +22,7 @@
 void * BusyWork(void *t)
 {
     
-    uint64_t i, j;
+    int64_t i, j;
     int64_t k, S;
     uint32_t bucket_a, bucket_b;
     double p, lambda, distance, x_diff, y_diff;
@@ -92,7 +92,7 @@ void * BusyWork(void *t)
             
             k = -1;
             bucket_A = buckets[bucket_a];
-            S = (bucket_A.count * (bucket_A.count - 1))/2;
+            S = ((int64_t)bucket_A.count * ((int64_t)bucket_A.count - 1))/2;
             
             // find the next link that might exist
             while ((k += geom_rand2(lambda, thread_id)) < S)
@@ -109,7 +109,8 @@ void * BusyWork(void *t)
                 if (GetUniform(thread_id) < prob(s1, s2, q, distance))
                     AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                     bucket_A.start + (uint32_t)i,
-                                    bucket_A.start + (uint32_t) j, distance);
+                                    bucket_A.start + (uint32_t)j,
+                                    distance);
                 
             }
             
@@ -126,16 +127,17 @@ void * BusyWork(void *t)
                 k = -1;
                 bucket_B = buckets[bucket_b];
                 
-                p =  Q[abs(bucket_A.i - bucket_B.i) +
-                       Mx * abs(bucket_A.j - bucket_B.j)];
+                p =  Q[abs((int32_t)bucket_A.i - (int32_t)bucket_B.i) +
+                       (int32_t)Mx *
+                       abs((int32_t)bucket_A.j - (int32_t)bucket_B.j)];
+                
                 lambda = -log2(1 - p * q);
                 
-                S = bucket_A.count * bucket_B.count;
+                S = (int64_t)bucket_A.count * (int64_t)bucket_B.count;
                 
                 // find the next link that might exist
                 while ((k += geom_rand2(lambda, thread_id)) < S)
                 {
-                    
                     i = k % bucket_A.count;
                     j = k / bucket_A.count;
                     
@@ -147,7 +149,8 @@ void * BusyWork(void *t)
                     if (GetUniform(thread_id) * p < prob(s1, s2, q, distance))
                         AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
-                                        bucket_B.start + (uint32_t)j, distance);
+                                        bucket_B.start + (uint32_t)j,
+                                        distance);
                 }
             }
         }
@@ -156,12 +159,12 @@ void * BusyWork(void *t)
     else
     {
         // for now any other option means use the N^2 algorithm
+        // but at least in a parallel fashion
         /* Generate intra bucket edges in bucket_a */
         
         for (bucket_a = thread_id; bucket_a < Mx * My;
              bucket_a += thread_data->thread_count)
         {
-            
             bucket_A = buckets[bucket_a];
             
             for (i = 0; i < bucket_A.count; i++)
@@ -176,7 +179,8 @@ void * BusyWork(void *t)
                     if (GetUniform(thread_id) < q * prob(s1, s2, q, distance))
                         AddEdgeToBuffer(thread_data->options, edges, &edge_buffer,
                                         bucket_A.start + (uint32_t)i,
-                                        bucket_A.start + (uint32_t)j, distance);
+                                        bucket_A.start + (uint32_t)j,
+                                        distance);
                 }
             }
         }
@@ -204,7 +208,7 @@ void * BusyWork(void *t)
                         if (GetUniform(thread_id) < q * prob(s1, s2, q, distance))
                             AddEdgeToBuffer(thread_data->options,
                                             edges, &edge_buffer,
-                                            bucket_A.start + (uint32_t) i,
+                                            bucket_A.start + (uint32_t)i,
                                             bucket_B.start + (uint32_t)j,
                                             distance);
                     }
@@ -233,8 +237,8 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
 {
     double distance;
     double *Q;
-    uint64_t i;
-    uint64_t j;
+    uint32_t i;
+    uint32_t j;
     
     /* calloc initialises with zeros */
     double *t = calloc(options->M, sizeof(double));
