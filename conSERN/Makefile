@@ -13,6 +13,7 @@ TARGET = conSERN.mexa64
 CC=gcc
 CFLAGS= -O0  -Ofast   -DMATLAB -fPIC -lm -lpthread  -I/usr/local/matlab/extern/include/ 
 MX=mex -cxx -O -largeArrayDims CFLAGS='$$CFLAGS -DMATLAB' -I/usr/local/matlab/extern/include/  
+
 # -L/usr/local/matlab/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++
 VPATH = ../
 
