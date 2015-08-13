@@ -6,20 +6,20 @@ polygon = 2;
 % probability functions
 waxman=0
 clipped_waxman=1
-constant =2
+waxman_transition_threshold=2
 threshold=3
-powerlaw=4
-cauchy=5
-exponential=6
-maxentropy=7
-clipped_waxman2= 8
+constant=4
+powerlaw=5
+cauchy=6
+exponential=7
+maxentropy=8
+
 
 %distance functions
 euclidean=0
 manhattan=1
-max=2
-discrete=3
-
+discrete=2
+max=3
 
 %some sample regions
 A1= [[9;11], [6;8], [4;5], [10;3]]
