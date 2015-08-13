@@ -18,7 +18,7 @@ typedef void *(*CallocFunction)(size_t, size_t);
 
 
 
-typedef void  (*errIdAndTxt)(const char * identifier, uint32_t line,
+typedef void  (*ErrIdAndTxt)(const char * identifier, uint32_t line,
                              const char * fmt,	// printf style
                              ...);
 
@@ -44,7 +44,7 @@ typedef struct
     DistanceFunction distance;
     ReallocFunction realloc;
     CallocFunction calloc;
-    errIdAndTxt errIdAndTxt;
+    ErrIdAndTxt errIdAndTxt;
 
 } Options;
 

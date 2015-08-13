@@ -47,7 +47,7 @@
 
 
 
-void ErrIdAndTxt(const char * filename,
+void errIdAndTxt(const char * filename,
                         uint32_t line,
                         const char *fmt, ...)
 {
@@ -194,7 +194,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     /* and how to display error and exit */
     
-    options.errIdAndTxt = ErrIdAndTxt;
+    options.errIdAndTxt = errIdAndTxt;
     
     /* check what optional outputs are required */
     /* only allocate space for the "distances" if required */
