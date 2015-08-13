@@ -88,6 +88,6 @@ seed=1962;
 connected=0;
 shape = rectangle;
 A = unit_square;
-metric = euclidean_metric;
+metric = euclidean;
 DistanceFunction = waxman;
 
