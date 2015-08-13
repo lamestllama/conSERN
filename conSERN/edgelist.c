@@ -22,24 +22,21 @@ uint64_t AllocateEdgeBuffer(Options *options, EdgeList *l, uint32_t buffer_size,
     
     l->from = malloc(sizeof(uint32_t) * l->allocated);
     if (l->from == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     l->to = malloc(sizeof(uint32_t) * l->allocated);
     if (l->to == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     
     if (l->weights_enabled)
     {
         l->weight = malloc(sizeof(float) * l->allocated);
         if (l->weight == NULL)
-            options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error unable to allocate memory");
     }
     
     return l->allocated;

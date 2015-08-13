@@ -280,9 +280,8 @@ void polygonAppend(const Options *options, PolygonStruct *p, const VectorStruct 
         p->vertices = (VectorStruct *)
         realloc(p->vertices, sizeof(VectorStruct) * p->allocated);
         if (NULL == p->vertices)
-            options->errIdAndTxt("\n"__FILE__,
-                                 " line %d. Error unable to allocate memory",
-                                 __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error unable to allocate memory");
     }
     p->vertices[p->count++] = *v;
 }
@@ -403,15 +402,12 @@ PolygonStruct *polygonClip(const Options *options, PolygonStruct *poly,
     
     in = polygonNew();
     if (in == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     out = polygonNew();
     if (out == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__, "Error unable to allocate memory");
     
     // get the direction of the clipping polygon
     direction = polygonDirection(clip);
@@ -472,9 +468,8 @@ GeometryStruct *geometryGenerate(const Options* options,
     
     g = calloc(1, sizeof(GeometryStruct));
     if (NULL == g)
-        options->errIdAndTxt("\n"__FILE__,
-                         " line %d. Error allocating memory",
-                         __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__, 
+                             "Error allocating memory");
     
     g->type = type;
     g->polygon = p;
@@ -708,9 +703,7 @@ BucketStruct *GenerateBuckets(const Options *options,
     /* calloc used to zero all fields */
     BucketStruct * buckets = calloc(g->Mx * g->My, sizeof(BucketStruct));
     if (buckets == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__, "Error unable to allocate memory");
     
     bucketArea = g->bucketSize * g->bucketSize;
     

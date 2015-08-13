@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "mex.h"
 
 
 extern uint64_t memccpyThreadCount;
@@ -83,14 +84,16 @@ static inline uint64_t CopyEdgeList(Options *options, EdgeList *l, EdgeList *b)
         if (l->weights_enabled)
             l->weight = options->realloc(l->weight,sizeof(float) * l->allocated);
         
-        if ((NULL == l->from) || (NULL == l->to) ||
-            (l->weights_enabled && (NULL == l->weight)))
+        // if we needed memory but got none returned to us
+        if ((l->allocated > 0) &&
+            ((NULL == l->from) ||
+             (NULL == l->to) ||
+             (l->weights_enabled && (NULL == l->weight))))
         {
-            options->errIdAndTxt("\n"__FILE__,
-                                 " line %d. Error unable to allocate memory",
-                                 __LINE__);
-        }
             
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error unable to allocate memory");
+        }
         
         /* TODO: we can do this better with some math */
         l->growth =  l->allocated / 10;

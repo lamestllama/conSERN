@@ -87,17 +87,15 @@ uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
         roots = calloc(options->N, sizeof(uint32_t));
     
     if (roots == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt("\n"__FILE__, __LINE__,
+                             " Error unable to allocate memory");
     
     // use this to indicate the roots of connected components
     signs = (int8_t *) calloc(N, sizeof(int8_t));
     
     if (signs == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     
     // set all nodes to be their own root
@@ -168,9 +166,8 @@ uint32_t Components(Options *options,  NodeList *nodes, EdgeList* edges)
     
     componentRoots = (uint32_t *) calloc(c, sizeof(uint32_t));
     if (componentRoots == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     // largest component assigned label 1 the
     // others are labeled arbitrarily labeled

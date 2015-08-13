@@ -244,9 +244,8 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
     double *t = calloc(options->M, sizeof(double));
     
     if (t == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     
     for (i = 1; i < options->M; i++) t[i] = (i - 1) * g->bucketSize;
@@ -254,9 +253,8 @@ double *CreateQ(const GeometryStruct *g, const Options *options)
     Q = malloc((size_t) sizeof(double) * g->Mx * g->My);
     
     if (Q == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     for(j = 0; j < g->My; j++)
     {
@@ -316,15 +314,13 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     // provided memory allocation function
     nodes->x = options->calloc(options->N, sizeof(float));
     if (nodes->x == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     nodes->y = options->calloc(options->N, sizeof(float));
     if (nodes->y == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     
     // creates bucket structures with pre-initialised node counts
@@ -338,15 +334,13 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
     
     threads = calloc(options->ThreadCount, sizeof(pthread_t));
     if (threads == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     thread_data = calloc(options->ThreadCount, sizeof(ThreadDataStruct));
     if (thread_data == NULL)
-        options->errIdAndTxt("\n"__FILE__,
-                             " line %d. Error unable to allocate memory",
-                             __LINE__);
+        options->errIdAndTxt(__FILE__, __LINE__,
+                             "Error unable to allocate memory");
     
     for(t=0; t < options->ThreadCount; t++)
     {
@@ -374,9 +368,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
                             (void *) &GenerateNodes,(void *) &thread_data[t]);
         if (rc)
         {
-            options->errIdAndTxt("\n"__FILE__,
-                               " line %d. Error creating threads",
-                               __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                               "Error creating threads");
 
         }
     }
@@ -388,9 +381,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            options->errIdAndTxt("\n"__FILE__,
-                                 " line %d. Error joining threads",
-                                 __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error joining threads");
         }
         
     }
@@ -416,9 +408,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
                             &attr, BusyWork,(void *) &thread_data[t]);
         if (rc)
         {
-            options->errIdAndTxt("\n"__FILE__,
-                                 " line %d. Error creating threads",
-                                 __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error creating threads");
         }
     }
     
@@ -430,9 +421,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            options->errIdAndTxt("\n"__FILE__,
-                                 " line %d. Error joining threads",
-                                 __LINE__);
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error joining threads");
         }
         
     }

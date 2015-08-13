@@ -12,6 +12,7 @@
 #include "mex.h"
 #include "edgeprobfuncs.h"
 #include <time.h>
+#include <stdarg.h>
 
 #define NUM_ELEMS(X)           (sizeof(X)/sizeof(*(X)))
 
@@ -41,6 +42,25 @@
 #define ALGORITHM__default  0
 #define BUFFER_SIZE_default 10000
 
+
+
+
+
+
+void ErrIdAndTxt(const char * filename,
+                        uint32_t line,
+                        const char *fmt, ...)
+{
+    va_list argptr;
+    mexPrintf("\n%s line %d : ", filename, line);
+    va_start(argptr,fmt);
+    mexPrintf(fmt, argptr);
+    va_end(argptr);
+    // matlab will not even get into this function for failure to
+    // return memory from mxCalloc or mxRealloc inside a mex file
+    // as it will report out of memory to the user before it causes
+    // the mex function to terminate
+}
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -174,7 +194,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     
     /* and how to display error and exit */
     
-    options.errIdAndTxt = mexErrMsgIdAndTxt;
+    options.errIdAndTxt = ErrIdAndTxt;
     
     /* check what optional outputs are required */
     /* only allocate space for the "distances" if required */

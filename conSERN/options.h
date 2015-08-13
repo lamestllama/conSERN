@@ -18,8 +18,8 @@ typedef void *(*CallocFunction)(size_t, size_t);
 
 
 
-typedef void  (*errIdAndTxt)(const char * identifier,
-                             const char * warn_msg,	// printf style
+typedef void  (*errIdAndTxt)(const char * identifier, uint32_t line,
+                             const char * fmt,	// printf style
                              ...);
 
 
