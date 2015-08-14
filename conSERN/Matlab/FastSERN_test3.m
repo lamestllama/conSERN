@@ -16,8 +16,8 @@ n = 10.^6;
 k = 10; 
 Gs = laplace_trans(g, support, s);  
 q = k ./ ((n-1) * Gs);
-small_q = 0.000001  ./ ((n-1) * Gs); 
-   
+small_q = 0.00001  ./ ((n-1) * Gs); 
+    
 runs = 100; % number of simulations to run
 threads = [1:1:12];  
 buffersizes = [10.^[3:6]]; 
@@ -79,6 +79,28 @@ xlabel('threads');
 ylabel('time (seconds)');
 
 filename = sprintf('Plots/FastSERN_test3a.eps')
+print('-depsc', filename);
+
+
+figure(2)
+hold off
+plot(0,0)
+hold on
+plots = plot(threads, T ./ max(max(T)));
+plots(length(buffersizes)+1) = plot(threads, 1./threads, 'r--');
+plots(length(buffersizes)+2) = plot(threads, T_baseline./ max(max(T)), 'g--');
+legend_str(length(buffersizes)+1,1:5) = 'ideal';
+legend_str(length(buffersizes)+2,1:13) = 'node creation';
+legend(plots, legend_str, 'location', 'eastoutside');
+set(gca, 'fontsize', 18);
+% set(gca, 'xtick',  10.^[-1:1]);
+set(gca, 'xlim',  [1  max(threads)]);
+% set(gca, 'ytick',  10.^[-2:1:1]);
+% set(gca, 'ylim',  [0 0.12]);
+xlabel('threads');
+ylabel('time (relative)');
+
+filename = sprintf('Plots/FastSERN_test3b.eps')
 print('-depsc', filename);
 
 
