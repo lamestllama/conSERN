@@ -368,9 +368,9 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
                             (void *) &GenerateNodes,(void *) &thread_data[t]);
         if (rc)
         {
-            exit(-1);
-            //options->errIdAndTxt(__FILE__, __LINE__,
-            //                   "Error creating threads");
+            
+            options->errIdAndTxt(__FILE__, __LINE__,
+                               "Error creating threads");
 
         }
     }
@@ -383,9 +383,9 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            exit(-1);
-            //options->errIdAndTxt(__FILE__, __LINE__,
-            //                     "Error joining threads");
+            
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error joining threads");
         }
         
     }
@@ -411,9 +411,9 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
                             &attr, BusyWork,(void *)(&thread_data[t]));
         if (rc)
         {
-            exit(-1);
-            //options->errIdAndTxt(__FILE__, __LINE__,
-            //                     "Error creating threads");
+            
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error creating threads");
         }
     }
     
@@ -425,9 +425,8 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            exit(-1);
-            //options->errIdAndTxt(__FILE__, __LINE__,
-            //                     "Error joining threads");
+            options->errIdAndTxt(__FILE__, __LINE__,
+                                 "Error joining threads");
         }
         
     }
