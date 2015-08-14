@@ -56,21 +56,21 @@ ellipse = 1;
 polygon = 2;
 
 % probability functions
-waxman=0
-clipped_waxman=1
-waxman_transition_threshold=2
-threshold=3
-constant=4
-powerlaw=5
-cauchy=6
-exponential=7
-maxentropy=8
+waxman=0;
+clipped_waxman=1;
+waxman_transition_threshold=2;
+threshold=3;
+constant=4;
+powerlaw=5;
+cauchy=6;
+exponential=7;
+maxentropy=8;
 
 %distance functions
-euclidean=0
-manhattan=1
-discrete=2
-max=3
+euclidean=0;
+manhattan=1;
+discrete=2;
+max=3;
 
 %some sample regions
 unit_square = [[0;0], [1;1]]; 
