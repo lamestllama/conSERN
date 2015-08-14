@@ -8,7 +8,7 @@
 % test how the algorithm scales with threads
 %
 %
-clear;
+clear; 
 common;
 
 s = [3];
@@ -20,7 +20,7 @@ small_q = 0.00001  ./ ((n-1) * Gs);
     
 runs = 100; % number of simulations to run
 threads = [1:1:12];  
-buffersizes = [10.^[3:6]]; 
+buffersizes = [10.^[4:6]]; 
 % buffersizes = [10.^[5]]; 
 M = [20]; % bucket dimension for large s
   
@@ -86,12 +86,10 @@ figure(2)
 hold off
 plot(0,0)
 hold on
-plots = plot(threads, T ./ max(max(T)));
-plots(length(buffersizes)+1) = plot(threads, 1./threads, 'r--');
-plots(length(buffersizes)+2) = plot(threads, T_baseline./ max(max(T)), 'g--');
+plots2 = plot(threads, T ./ max(max(T)));
+plots2(length(buffersizes)+1) = plot(threads, 1./threads, 'r--');
 legend_str(length(buffersizes)+1,1:5) = 'ideal';
-legend_str(length(buffersizes)+2,1:13) = 'node creation';
-legend(plots, legend_str, 'location', 'eastoutside');
+legend(plots2, legend_str, 'location', 'eastoutside');
 set(gca, 'fontsize', 18);
 % set(gca, 'xtick',  10.^[-1:1]);
 set(gca, 'xlim',  [1  max(threads)]);

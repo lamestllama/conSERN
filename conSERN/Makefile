@@ -9,10 +9,11 @@
 # 	TARGET = MexFastSERN.mexa64
 # endif 
 TARGET = conSERN.mexa64
+INCLUDES =  -I/usr/local/matlab/extern/include/  -I/opt/local/MATLAB/R2014a/extern/include/
 
 CC=gcc
-CFLAGS= -O0  -Ofast   -DMATLAB -fPIC -lm -lpthread  -I/usr/local/matlab/extern/include/ 
-MX=mex -cxx -O -largeArrayDims CFLAGS='$$CFLAGS -DMATLAB' -I/usr/local/matlab/extern/include/  
+CFLAGS= -O0  -Ofast   -DMATLAB -fPIC -lm -lpthread  $(INCLUDES) 
+MX=mex -cxx -O -largeArrayDims CFLAGS='$$CFLAGS -DMATLAB' $(INCLUDES) 
 
 # -L/usr/local/matlab/bin/glnxa64 -lmx -lmex -lmat -lm -lstdc++
 VPATH = ../

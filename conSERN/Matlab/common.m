@@ -23,7 +23,7 @@ set(0,'DefaultAxesLineWidth', 1);
 version = '0.03';
 
 % get code for doing line distances in a random region
-path(path, '/home/mroughan/Reports/Networking/Topology/Waxman/Matlab/LinePicking/Matlab/');
+path(path, '~/Reports/Networking/Topology/Waxman/Matlab/LinePicking/Matlab/');
 
 % and Laplace transform code
 path(path,'../../../Waxman/Matlab/Estimation/');
@@ -51,26 +51,26 @@ skipping = 0;
 naive = 1;
 
 % geometry shapes
-rectangle = 0;
-ellipse = 1;
-polygon = 2;
+region_rectangle = 0;
+region_ellipse = 1;
+region_polygon = 2;
 
 % probability functions
-waxman=0;
-clipped_waxman=1;
-waxman_transition_threshold=2;
-threshold=3;
-constant=4;
-powerlaw=5;
-cauchy=6;
-exponential=7;
-maxentropy=8;
+pf_waxman=0;
+pf_clipped_waxman=1;
+pf_waxman_transition_threshold=2;
+pf_threshold=3;
+pf_constant=4;
+pf_powerlaw=5;
+pf_cauchy=6;
+pf_exponential=7;
+pf_maxentropy=8;
 
 %distance functions
-euclidean=0;
-manhattan=1;
-discrete=2;
-max=3;
+metric_euclidean=0;
+metric_manhattan=1;
+metric_discrete=2; 
+metric_max=3;
 
 %some sample regions
 unit_square = [[0;0], [1;1]]; 
@@ -86,8 +86,8 @@ algorithm=0;
 buffersize=5000;
 seed=1962;
 connected=0;
-shape = rectangle;
+shape = region_rectangle;
 A = unit_square;
-metric = euclidean;
-DistanceFunction = waxman;
+metric = metric_euclidean;
+DistanceFunction = pf_waxman;
 
