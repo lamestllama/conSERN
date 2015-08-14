@@ -227,7 +227,7 @@ void * BusyWork(void *t)
         free(edge_buffer.weight);
     
     
-    pthread_exit((void*) 7);
+     pthread_exit(NULL);
 }
 
 
@@ -368,25 +368,28 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
                             (void *) &GenerateNodes,(void *) &thread_data[t]);
         if (rc)
         {
-            options->errIdAndTxt(__FILE__, __LINE__,
-                               "Error creating threads");
+            exit(-1);
+            //options->errIdAndTxt(__FILE__, __LINE__,
+            //                   "Error creating threads");
 
         }
     }
     
     /* Free attribute and wait for the other threads */
+    pthread_attr_destroy(&attr);
     
     for(t = 0; t < options->ThreadCount; t++)
     {
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            options->errIdAndTxt(__FILE__, __LINE__,
-                                 "Error joining threads");
+            exit(-1);
+            //options->errIdAndTxt(__FILE__, __LINE__,
+            //                     "Error joining threads");
         }
         
     }
-    pthread_attr_destroy(&attr);
+   
     
     //--------------------------------------------------------------------------
     //  EDGE GENERATION
@@ -405,11 +408,12 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         
         
         rc = pthread_create(&threads[t],
-                            &attr, BusyWork,(void *) &thread_data[t]);
+                            &attr, BusyWork,(void *)(&thread_data[t]));
         if (rc)
         {
-            options->errIdAndTxt(__FILE__, __LINE__,
-                                 "Error creating threads");
+            exit(-1);
+            //options->errIdAndTxt(__FILE__, __LINE__,
+            //                     "Error creating threads");
         }
     }
     
@@ -421,8 +425,9 @@ int GenSERN(NodeList* nodes, EdgeList* edges,
         rc = pthread_join(threads[t], &status);
         if (rc)
         {
-            options->errIdAndTxt(__FILE__, __LINE__,
-                                 "Error joining threads");
+            exit(-1);
+            //options->errIdAndTxt(__FILE__, __LINE__,
+            //                     "Error joining threads");
         }
         
     }

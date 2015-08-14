@@ -345,5 +345,4 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mxSetN(plhs[6], 1);
         mxSetData(plhs[6], nodes.component);
     }
-    
 }

@@ -622,7 +622,7 @@ void * GenerateNodes(void *t)
                 
         }
     }
-    pthread_exit((void*) 7);
+    pthread_exit(NULL);
 }
 
 
