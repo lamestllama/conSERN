@@ -3,7 +3,7 @@
  *  conSERN
  *
  *  Created by Eric Parsonage on 8/2/15.
- *  Copyright 2015 __MyCompanyName__. All rights reserved.
+ *  Copyright 2015. All rights reserved.
  *
  */
 

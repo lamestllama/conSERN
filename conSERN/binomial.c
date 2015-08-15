@@ -3,6 +3,7 @@
 //  NodePlacementTesting
 //
 //  Created by Eric Parsonage on 7/24/15.
+//  Copyright 2015. All rights reserved.
 //
 //
 

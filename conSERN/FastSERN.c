@@ -1,8 +1,9 @@
 //
 //  FastSERN.c
-//  MexFastSERN
+//  conSERN
 //
 //  Created by Eric Parsonage on 3/30/15.
+//  Copyright 2015. All rights reserved.
 //
 //
 
@@ -95,7 +96,12 @@ void * BusyWork(void *t)
             S = ((int64_t)bucket_A.count * ((int64_t)bucket_A.count - 1))/2;
             
             // find the next link that might exist
-            while ((k += geom_rand2(lambda, thread_id)) < S)
+            // geom_rand2 returns an int64 in the range 0 ... INT64_MAX
+            // loop terminates when either k is greater than the number
+            // of edges possible between nodes in the bucket or k
+            // has wrapped meaning it has skipped past the 2^63 possible
+            // edges we support and is now negative.
+            while ((k += geom_rand2(lambda, thread_id)) < S && k >= 0)
             {
                 // can we do an integer square root here ?
                 j = 1 + ((((int64_t)sqrtl(8 * k + 1)) - 1) / 2);
@@ -136,7 +142,7 @@ void * BusyWork(void *t)
                 S = (int64_t)bucket_A.count * (int64_t)bucket_B.count;
                 
                 // find the next link that might exist
-                while ((k += geom_rand2(lambda, thread_id)) < S)
+                while ((k += geom_rand2(lambda, thread_id)) < S && k >= 0)
                 {
                     i = k % bucket_A.count;
                     j = k / bucket_A.count;

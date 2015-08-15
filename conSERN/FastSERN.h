@@ -1,8 +1,9 @@
 //
 //  FastSERN.h
-//  MexFastSERN
+//  conSERN
 //
 //  Created by Eric Parsonage on 3/30/15.
+//  Copyright 2015. All rights reserved.
 //
 //
 
