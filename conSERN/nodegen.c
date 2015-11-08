@@ -290,7 +290,7 @@ void polygonAppend(const Options *options, PolygonStruct *p, const VectorStruct 
 
 // ray casting to the right to see how many edges we cross
 int32_t polygonInside(const PolygonStruct *polygon,
-                      const float x, const float y)
+                      const double x, const double y)
 {
     uint32_t  i;
     uint32_t  j;

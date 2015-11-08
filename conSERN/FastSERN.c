@@ -18,13 +18,14 @@
 #include <assert.h>
 #include <pthread.h>
 
+#include <xmmintrin.h>
 
 
 void * BusyWork(void *t)
 {
-    
+
     int64_t i, j;
-    int64_t k, S;
+    int64_t  k, S;
     uint32_t bucket_a, bucket_b;
     double p, lambda, distance, x_diff, y_diff;
     BucketStruct bucket_A, bucket_B;
@@ -45,7 +46,7 @@ void * BusyWork(void *t)
     EdgeList edge_buffer;
     
     thread_data = (ThreadDataStruct *)t;
-    
+    k = sizeof(k);
     // store all the frequently used values locally
     thread_id = thread_data->thread_id;
     thread_count = thread_data->thread_count;
@@ -103,7 +104,12 @@ void * BusyWork(void *t)
             // edges we support and is now negative.
             while ((k += geom_rand2(lambda, thread_id)) < S && k >= 0)
             {
-                // can we do an integer square root here ?
+                // no need for an integer square root as long as
+                // the implicit cast to long double in the call
+                // to sqrtl gives us an extended precision double
+                // i.e. 80 bits on intel hardware. If not this will
+                // need looking at as double will not have sufficient
+                // precision once k gets over
                 j = 1 + ((((int64_t)sqrtl(8 * k + 1)) - 1) / 2);
                 i = k - j * (j - 1) / 2;
                 

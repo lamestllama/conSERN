@@ -12,10 +12,13 @@
 
 #include <stdio.h>
 #include "options.h"
+
+
+
 typedef struct
 {
-    float *x;
-    float *y;
+    coordType *x;
+    coordType *y;
     uint32_t *component;
 } NodeList;
 
@@ -42,8 +45,8 @@ typedef enum
 
 typedef struct
 {
-    float    *x;
-    float    *y;
+    coordType    *x;
+    coordType    *y;
     uint32_t count;
     uint32_t start;
     uint32_t i;

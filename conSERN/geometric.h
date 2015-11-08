@@ -18,6 +18,7 @@
 #endif
 
 
+
 static inline int64_t geom_rand(double p, uint32_t thread)
 {
     // clamp the jumps to the maximum number of edges we can
@@ -38,7 +39,7 @@ static inline int64_t geom_rand2(double lambda, uint32_t thread)
     // clamp the jumps to the maximum number of edges we can
     // have in a graph addition of this will cause k to wrap negative
     // and then our main loop will exit the complexity in this method
-    // is to avoid a branching instruction
+    
     
     double results[2];
     

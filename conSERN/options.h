@@ -20,6 +20,8 @@ typedef void *(*CallocFunction)(size_t, size_t);
 typedef void  (*ErrIdAndTxt)(const char * identifier, uint32_t line,
                              const char * fmt,	// printf style
                              ...);
+typedef float coordType;
+
 
 
 typedef struct
