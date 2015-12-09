@@ -1,0 +1,39 @@
+# conSERN
+
+conSERN contains code for fast-generation of Spatially Embedded Random
+Networks, such as the Waxman random graph.
+
+### Contents
+The directories are
+    conSERN:   C source code
+    Matlab:    examples, and tests using Matlab through a Mex file
+
+
+### Installation
+
+(1)
+   Mac OSX installation is via Xcode.
+
+   Linux
+     Enter the conSERN directory, and type
+       make
+     This should construct the libraries, and a Matlab Mex file (for
+     linux). Some modifications to the makefile might be needed for
+     local customisation. 
+
+(2) The "testgen.m" matlab script in Matlab should now work.
+
+(3) If you want to get all of the tests reported in [1] then you also
+    need to install the "Linepicking" package from
+        https://github.com/mroughan/LinePicking
+    and set the appropriate paths in common.m
+ 
+
+
+
+
+Edit the paths in the test code Matlab file "common.m". Note that
+    the test code
+         
+
+
