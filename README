@@ -15,13 +15,13 @@ The directories are
    Mac OSX installation is via Xcode.
 
    Linux
-     Enter the conSERN directory, and type
+     Enter the ./conSERN sub-directory, and type
          make
      This should construct the libraries, and a Matlab Mex file (for
      linux). Some modifications to the makefile might be needed for
      local customisation. 
 
-(2) The "testgen.m" matlab script in Matlab should now work.
+(2) Enter the ./Matlab sub-directory. The "testgen.m" matlab script should now work.
 
 (3) If you want to get all of the tests reported in [1] then you also
     need to install the "Linepicking" package from
@@ -30,6 +30,10 @@ The directories are
  
 (4) If you want to run this from another directory, then you will have
     to set up an appropriate search path.
+
+
+
+[1] Reference to be added.
 
 
 

@@ -18,7 +18,7 @@ s = 10.^[-1:s_step:1];
 n = 10^6;
 k = 1; 
 Gs = laplace_trans(g, support, s);  
-q = k ./ ((n-1) * Gs)
+q = k ./ ((n-1) * Gs);
  
 runs = 100; % number of simulations to run
 Ms = [1, 5, 10, 20, 40]; % bucket dimension for large s
