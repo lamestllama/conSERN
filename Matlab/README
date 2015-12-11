@@ -1,0 +1,37 @@
+# FastSERN tools
+
+## Contents
+
+   Test files
+      testgen.m        - initial test its working
+      examples.m       - examples using some of the features
+      FastSERN_testX.m - tests used to benchmark the code
+	FastSERN_test1.m  -- comparison of methods vs n and M (large s)
+	FastSERN_test1a.m -- comparison of methods vs n and M (small s)
+	FastSERN_test2.m  -- comparison of affect of M for varying s 
+	FastSERN_test3.m  -- look at multi-threading performance
+	FastSERN_test4.m  -- big case
+
+   Useful files
+      common.m      -- common definitions and colour etc for output
+      defaults.m    -- parameter defaults and path setup
+      linepicking.m -- links to linepicking code used in benchmarks
+      FastSERN.m    -- sets up help for Matlab
+
+   Others (which are what they sound like)
+      laplace_trans.m
+      laplace_trans_test.m
+      waxman_gen.m
+
+
+## Dependencies: 
+ 
+   Benchmarks depend on LinePicking code, but only  to calculate q
+           (q is calculated to give fixed average node degree k)
+ 
+
+## Installation:
+       See top level README
+
+
+

@@ -16,7 +16,7 @@ The directories are
 
    Linux
      Enter the conSERN directory, and type
-       make
+         make
      This should construct the libraries, and a Matlab Mex file (for
      linux). Some modifications to the makefile might be needed for
      local customisation. 
@@ -26,14 +26,11 @@ The directories are
 (3) If you want to get all of the tests reported in [1] then you also
     need to install the "Linepicking" package from
         https://github.com/mroughan/LinePicking
-    and set the appropriate paths in common.m
+    and set the appropriate paths in linepicking.m
  
+(4) If you want to run this from another directory, then you will have
+    to set up an appropriate search path.
 
 
-
-
-Edit the paths in the test code Matlab file "common.m". Note that
-    the test code
-         
 
 

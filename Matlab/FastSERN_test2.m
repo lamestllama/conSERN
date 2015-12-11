@@ -10,6 +10,8 @@
 %
 clear;
 common;
+defaults;
+linepicking;
 
 s_step = 0.25;
 s = 10.^[-1:s_step:1];

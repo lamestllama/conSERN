@@ -10,6 +10,11 @@
 %
 clear;
 common;
+defaults;
+linepicking;
+
+% get code for doing line distances in a random region
+path(path, '~/Reports/Networking/Topology/Waxman/Matlab/LinePicking/Matlab/');
 
 s = 10;
 n_step = 0.25;
@@ -22,7 +27,7 @@ max_matlab = 10^4.25;
 % max_matlab = 10^4;
 k = 1;
 Gs = laplace_trans(g, support, s);  
-q = k ./ ((ns-1) * Gs)
+q = k ./ ((ns-1) * Gs);
  
 runs = 100; % number of simulations to run 
 Ms = [1, 5, 10, 15]; % bucket dimension for large s

@@ -10,6 +10,8 @@
 %
 clear; 
 common;
+defaults;
+linepicking;
 
 s = [3];
 n = 10.^6;  

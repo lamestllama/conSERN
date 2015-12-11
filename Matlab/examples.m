@@ -1,3 +1,7 @@
+% various examples showing how to use the functions
+%  
+path(path,'../conSERN');
+
 % geometry shapes
 rectangle = 0;
 ellipse = 1;
@@ -14,7 +18,6 @@ cauchy=6
 exponential=7
 maxentropy=8
 
-
 %distance functions
 euclidean=0
 manhattan=1
@@ -26,7 +29,6 @@ A1= [[9;11], [6;8], [4;5], [10;3]]
 A2 = [[3;6],[4;8], [7;11],[10;7]]
 A3 = [[50;150],[200;50],[350;150], [350;300],[250;300],[200;250],[150;350],[100;250],[100;200]]
 A4 = [[1;1],[4;2]];
-
 
 
 DistanceFunction = waxman
@@ -133,7 +135,6 @@ shape = polygon
 DistanceFunction = maxentropy
 s = 0.01
 q = 0.02
-
 
 [x y n from to] = conSERN(DistanceFunction, s, q, N, Metric, shape, A);
 figure(9)

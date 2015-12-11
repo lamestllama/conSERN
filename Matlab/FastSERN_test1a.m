@@ -10,6 +10,8 @@
 %
 clear;
 common;
+defaults;
+linepicking;
 
 s = 0.1;
 n_step = 0.25;

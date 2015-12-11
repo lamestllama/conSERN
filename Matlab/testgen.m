@@ -1,8 +1,8 @@
 %
-% basic test that it functions
+% basic test that the code functions
 %
 clear;
-common;
+defaults;
 
 s = 3;
 q = 0.01; 
