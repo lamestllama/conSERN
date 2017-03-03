@@ -14,14 +14,17 @@ defaults;
 linepicking;
 
 s = [3];
-n = 10.^9;  
-k = 10; 
+% n = 10.^9;  
+% k = 10; 
+n = 4*10.^9;  
+k = 1; 
 Gs = laplace_trans(g, support, s);  
 q = k ./ ((n-1) * Gs);
 small_q = 0.00001  ./ ((n-1) * Gs); 
-    
+     
 runs = 1; % number of simulations to run
 threads = [20];  
+%threads = [1];  
 buffersizes = [10.^[5]]; 
 M = [20]; % bucket dimension for large s
   

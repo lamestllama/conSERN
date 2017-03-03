@@ -23,6 +23,8 @@
       laplace_trans_test.m
       waxman_gen.m
 
+      G.m plot sthe link-picking density, and its Laplace transform
+      G2.m plots the equivalent for other SERNS
 
 ## Dependencies: 
  
