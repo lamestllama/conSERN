@@ -1,9 +1,9 @@
 # conSERN
 
 conSERN contains code for fast-generation of Spatially Embedded Random
-Networks, such as the Waxman random graph, random plane networks,
-random geometric graphs, spatial networks, range-dependent random
-graphs, random connection models, random distance graphs, and
+Networks (SERNs), such as the Waxman random graph, random plane
+networks, random geometric graphs, spatial networks, range-dependent
+random graphs, random connection models, random distance graphs, and
 partially structured random graphs.
 
 ### Contents
