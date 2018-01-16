@@ -9,6 +9,9 @@ partially structured random graphs.
 ### Contents
 The directories are
     conSERN:   C source code
+                 conSERN.c has Matlab linking routines
+		 FastSERN.c has C library entry point (GenSERN)
+
     Matlab:    examples, and tests using Matlab through a Mex file
 
 
@@ -21,8 +24,20 @@ The directories are
      Enter the ./conSERN sub-directory, and type
          make
      This should construct the libraries, and a Matlab Mex file (for
-     linux). Some modifications to the makefile might be needed for
-     local customisation. 
+     linux) if mex is all set up for you.
+
+     Some modifications to the makefile might be needed for
+     local customisation, e.g., you need to set the includes to point
+     to your install.
+
+     You might also need to change the version of C compiler being
+     used. e.g., see
+         https://au.mathworks.com/matlabcentral/answers/137228-setup-mex-compiler-for-r2014a-for-linux
+     Essentially it requires installation of an earlier compiler
+     version, and then editing of (for instance) 
+         ~/.matlab/R2017a/mex_C_glnxa64.xml 
+         ~/.matlab/R2017a/mex_C++_glnxa64.xml
+     to point Matlab at the new version.	 
 
 (2) Enter the ./Matlab sub-directory. The "testgen.m" matlab script should now work.
 
@@ -33,7 +48,6 @@ The directories are
  
 (4) If you want to run this from another directory, then you will have
     to set up an appropriate search path.
-
 
 
 [1] Reference to be added.

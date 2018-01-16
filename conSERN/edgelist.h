@@ -15,8 +15,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include "mex.h"
-
 
 extern uint64_t memccpyThreadCount;
 extern pthread_mutex_t mutex_realloc;
